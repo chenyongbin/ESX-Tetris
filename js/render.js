@@ -8,8 +8,8 @@ define([
 ], function (jquery, comm) {
     'use strict';
 
-    var square = function () {
-        return "<span class='g-col'></span>";
+    var square = function (x, y) {
+        return "<span class='g-col' data-x='" + x + "' data-y='" + y + "'></span>";
     }
 
     var squares = function (...args) {
@@ -21,7 +21,7 @@ define([
 
         if (tetrisData && tetrisData.length) {
             for (let p of args) {
-                tetrisData[p.x][p.y].represented = false;
+                $("span[data-x=" + p.x + "][data-y=" + p.y + "]").addClass("represented");
             }
         }
     }
@@ -37,7 +37,7 @@ define([
             let liHtml = ["<li class='g-row'>"];
             let liData = [];
             for (let j = 0; j < cCount; j++) {
-                liHtml.push(square());
+                liHtml.push(square(i, j));
                 liData.push({
                     represented: false
                 });

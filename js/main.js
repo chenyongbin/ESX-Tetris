@@ -1,12 +1,16 @@
 require([
-    "../js/jquery.js",
-    "../js/displace.js",
-    "../js/render.js"
-], function (jquery, displace, render) {
+    "../js/var/tetris.js",
+    "../js/engine.js",
+    "../js/lib/jquery.js"
+], function (tetris) {
 
-    var tetrisData = window.tetrisData = [];
+    tetris.container = $("#container");
 
-    render.initialize("container", tetrisData);
-    console.log(tetrisData);
+    // Initialize all components
+    tetris.inits.forEach(function (init) {
+        init && init();
+    });
 
+    // Start the engine
+    tetris.engine.start();
 });

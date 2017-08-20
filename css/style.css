@@ -13,19 +13,20 @@ body,div,ul,li,span{
 
 .g-row{
     width: 100%;
-    height: 50px;    
+    height: 20px;    
     list-style-type: none;
 }
 
 .g-col{
     display: inline-block;
-    width: 48.5px;
+    width: 18px;
     height: 100%;        
     border: 0.1px solid #eee;    
     margin-left: 0.1px;    
-    background-color: #777777;
+    background-color: #879372;
+    opacity: 0.5;
 }
 
-.represented{
+.active{
     background-color: orange;
 }

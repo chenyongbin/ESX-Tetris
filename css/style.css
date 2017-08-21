@@ -1,5 +1,5 @@
 .container{
-    margin: 100px auto;
+    margin: 20px auto;
 
     border: 1px solid black;
     width: 402px;
@@ -19,14 +19,18 @@ body,div,ul,li,span{
 
 .g-col{
     display: inline-block;
-    width: 18px;
-    height: 100%;        
-    border: 0.1px solid #eee;    
-    margin-left: 0.1px;    
+    width: 16px;
+    height: 16px;        
+    border: 1px solid #eee;    
+    margin: 1px;    
     background-color: #879372;
     opacity: 0.5;
 }
 
 .active{
     background-color: orange;
+}
+
+.hightlight{
+    background-color:red;
 }

@@ -12,7 +12,7 @@ define(function () {
 
         var self = this;
 
-        this.points = points || [];
+        this.points = [];
 
         this.transform_down = function () {
             self.points.map(point => point.y += 1);
@@ -27,6 +27,8 @@ define(function () {
         }
 
         this.transform_rotate = function () { }
+
+        points.forEach(point => self.points.push({ x: point.x, y: point.y }));
     }
 
     return Block;

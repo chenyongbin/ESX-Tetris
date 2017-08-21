@@ -1,8 +1,9 @@
 define([
     '../js/var/tetris.js',
-    "../js/blockBuilder.js",
-    "../js/grid.js"
-], function (tetris, builder) {
+    "../js/common.js",
+    "../js/components/blockBuilder.js",
+    "../js/components/grid.js"
+], function (tetris, comm, builder, gridClass) {
     'use strict';
 
     function Engine() {
@@ -11,9 +12,10 @@ define([
         }
 
         var self = this;
+        var grid = null;
 
         // Private properties
-        var privateInterval = 5000;
+        var privateInterval = 200;
 
         this.totalScore = 0;
         this.lastScore = 0;
@@ -23,6 +25,7 @@ define([
         this.interval = privateInterval;
 
         this.start = function () {
+            grid = new gridClass($("#container"), 400, 500);
             createActiveBlock();
         }
 
@@ -30,34 +33,23 @@ define([
             disposeActiveBlock();
         }
 
-        this.transform_down = function () {
-            self.interval = self.interval / 2;
-        }
-
-        this.transform_left = function () {
-            self.activeBlock && self.activeBlock.transform_left();
-        }
-
-        this.transform_right = function () {
-            self.activeBlock && self.activeBlock.transform_right();
-        }
-
-        this.transform_rotate = function () {
-            self.activeBlock && self.activeBlock.transform_rotate();
-        }
-
-        this.refreshBlock = function (newPoints, oldPoints) {
-            tetris.grid.refreshBlock(newPoints, oldPoints);
-        }
-
-        this.checkReachEnd = function (points) {
-            return false;
-        }
-
-        this.getFillFullRows = function () { }
-
         this.calcScore = function (rows) {
-            return 1;
+            let score = 0;
+            let lastR = -1, calcCount = 1;
+
+            rows.sort((a, b) => a - b).forEach(r => {
+                if (lastR < 0) {
+                    lastR = r;
+                } else if (r - lastR == 1) {
+                    calcCount++;
+                } else {
+                    lastR = r;
+                    calcCount = 1;
+                    score += comm.getFibonacciValue(calcCount) * 10;
+                }
+            });
+
+            return score;
         }
 
         // Private methods
@@ -65,25 +57,24 @@ define([
             let oldPoints = [];
             block.points.map(point => oldPoints.push({ x: point.x, y: point.y }));
 
-            block.transform_down();
-            self.refreshBlock(block.points, oldPoints);
-
-            if (self.checkReachEnd(self.activeBlock.points)) {
+            if (grid.checkReachEnd(block.points)) {
                 disposeActiveBlock();
-                let fulfiledRows = self.getFillFullRows();
-                if (fulfiledRows) {
-                    tetris.grid.clearFillFullRows(fulfiledRows);
-                    self.lastScore = self.calcScore();
+                let activeRows = grid.getActiveRows();
+                if (activeRows && activeRows.length) {
+                    self.lastScore = self.calcScore(activeRows);
                     self.totalScore += self.lastScore;
+                    grid.inactivateRows(activeRows).repaint();
                 }
                 createActiveBlock();
+            } else {
+                block.transform.down();
+                grid.inactivatePoints(oldPoints).activatePoints(block.points);
             }
         }
 
         var getNewBlock = function () {
             let block = builder.getBlock();
-
-            let offsetX = Math.floor(Math.random() * (tetris.data[0].length - 2));
+            let offsetX = Math.floor(Math.random() * (grid.gridPointData[0].length - 4));
             block.points.map(point => point.x += offsetX);
 
             return block;
@@ -91,7 +82,13 @@ define([
 
         var createActiveBlock = function () {
             self.activeBlock = getNewBlock();
-            self.activeBlockId = setInterval(() => intervalHandler(self.activeBlock), self.interval);
+            if (grid.checkReachEnd(self.activeBlock.points)) {
+                disposeActiveBlock();
+                console.log("You fail.");
+            } else {
+                grid.activatePoints(self.activeBlock.points);
+                self.activeBlockId = setInterval(() => intervalHandler(self.activeBlock), self.interval);
+            }
         }
 
         var disposeActiveBlock = function () {

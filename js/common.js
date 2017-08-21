@@ -1,22 +1,19 @@
 define([], function () {
     'use strict';
 
-    function ArgsError(message) {
-        this.message = message || "The arguments cannot be empty.";
-        this.name = "ArgsError";
-    }
-    ArgsError.prototype = new Error();
-    ArgsError.prototype.constructor = ArgsError;
+    function getFibonacciValue(n) {
+        function calcFibonacci(num, prev1 = 1, prev2 = 1) {
+            if (num <= 1) {
+                return prev2;
+            }
 
-    function DepencyError(message) {
-        this.message = message || "The denpencies cannot be null.";
-        this.name = "DepencyError";
+            return calcFibonacci(num - 1, prev2, prev1 + prev2);
+        }
+
+        return calcFibonacci(n);
     }
-    DepencyError.prototype = new Error();
-    DepencyError.prototype.constructor = DepencyError;
 
     return {
-        ArgsError,
-        DepencyError
+        getFibonacciValue
     }
 });

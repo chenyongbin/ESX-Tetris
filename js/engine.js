@@ -1,9 +1,15 @@
 define([
     '../js/var/tetris.js',
+<<<<<<< HEAD
     "../js/common.js",
     "../js/components/blockBuilder.js",
     "../js/components/grid.js"
 ], function (tetris, comm, builder, gridClass) {
+=======
+    "../js/components/blockBuilder.js",
+    "../js/components/grid.js"
+], function (tetris, builder, gridClass) {
+>>>>>>> 91c024b0f6ea6404a0d0e0e66d1865fb815d9d62
     'use strict';
 
     function Engine() {
@@ -33,6 +39,13 @@ define([
             disposeActiveBlock();
         }
 
+<<<<<<< HEAD
+=======
+        this.checkReachEnd = function (points) {
+            return false;
+        }
+
+>>>>>>> 91c024b0f6ea6404a0d0e0e66d1865fb815d9d62
         this.calcScore = function (rows) {
             let score = 0;
             let lastR = -1, calcCount = 1;
@@ -67,14 +80,24 @@ define([
                 }
                 createActiveBlock();
             } else {
+<<<<<<< HEAD
                 block.transform.down();
+=======
+                block.transform_down();
+>>>>>>> 91c024b0f6ea6404a0d0e0e66d1865fb815d9d62
                 grid.inactivatePoints(oldPoints).activatePoints(block.points);
             }
         }
 
         var getNewBlock = function () {
             let block = builder.getBlock();
+<<<<<<< HEAD
             let offsetX = Math.floor(Math.random() * (grid.gridPointData[0].length - 4));
+=======
+            console.log("build a new block:" + block.points.map(p => "(x:" + p.x + ",y:" + p.y + ")").join(""));
+            let offsetX = Math.floor(Math.random() * (grid.gridPointData[0].length - 2));
+            console.log("offsetX=" + offsetX);
+>>>>>>> 91c024b0f6ea6404a0d0e0e66d1865fb815d9d62
             block.points.map(point => point.x += offsetX);
 
             return block;

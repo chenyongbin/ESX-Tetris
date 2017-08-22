@@ -12,7 +12,7 @@ define([
 
     var getBlock = function () {
         let index = Math.floor(Math.random() * blockEnumeration.length);
-        return new blockClass(blockEnumeration[1]);
+        return new blockClass(blockEnumeration[index]);
     }
 
     return {

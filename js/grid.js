@@ -35,7 +35,7 @@ define([
         var init = function () {
             let rCount = 25, cCount = 20;
 
-            gridContainer = $("<div class='grid'></div>");
+            gridContainer = $("div.grid");
             for (let r = 0; r < rCount; r++) {
                 let rData = [];
                 let rHtml = ["<div class='g-row'>"];
@@ -46,7 +46,7 @@ define([
                 rHtml.push("</div>");
                 self.gridData.push(rData);
                 gridContainer.append(rHtml.join(""));
-                container.append(gridContainer);
+                //container.append(gridContainer);
             }
 
             tetris.gridData = self.gridData;

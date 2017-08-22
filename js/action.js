@@ -17,6 +17,26 @@ define([
 
         // Private methods
         var init = function () {
+            $("#actionLeft").on("click", function () {
+                executeActionHandler(actionEnum.TRANSFORM_LEFT);
+            });
+
+            $("#actionRotate").on("click", function () {
+                executeActionHandler(actionEnum.TRANSFORM_ROTATE);
+            });
+
+            $("#actionRight").on("click", function () {
+                executeActionHandler(actionEnum.TRANSFORM_RIGHT);
+            });
+
+            $("#actionSpace").on("click", function () {
+                executeActionHandler(actionEnum.TRANSFORM_SPACE);
+            });
+
+            $("#actionDown").on("click", function () {
+                executeActionHandler(actionEnum.TRANSFORM_DOWN);
+            });
+
             registerActions();
         }
 

@@ -1,9 +1,9 @@
 define([
     '../js/var/tetris.js',
     "../js/common.js",
-    "../js/components/blockBuilder.js",
-    "../js/components/grid.js"
-], function (tetris, comm, builder, gridClass) {
+    "../js/blockBuilder.js",
+    "../js/grid.js"
+], function (tetris, comm, builder, grid) {
     'use strict';
 
     function Engine() {
@@ -11,29 +11,17 @@ define([
             return new Engine();
         }
 
+        // Private variables
         var self = this;
-        var grid = null;
+        var interval = 500;
+        var activeBlock = null;
+        var nextBlock = null;
+        var activeBlockId = -1;
+        var scoreChangeHandlerSet = new Set();
+        var blockChangeHandlerSet = new Set();
 
-        // Private properties
-        var privateInterval = 200;
-
-        this.totalScore = 0;
-        this.lastScore = 0;
-
-        this.activeBlock = null;
-        this.activeBlockId = -1;
-        this.interval = privateInterval;
-
-        this.start = function () {
-            grid = new gridClass($("#container"), 400, 500);
-            createActiveBlock();
-        }
-
-        this.stop = function () {
-            disposeActiveBlock();
-        }
-
-        this.calcScore = function (rows) {
+        // Private methods
+        var calcScore = function (rows) {
             let score = 0;
             let lastR = -1, calcCount = 1;
 
@@ -52,51 +40,127 @@ define([
             return score;
         }
 
-        // Private methods
-        var intervalHandler = function (block) {
-            let oldPoints = [];
-            block.points.map(point => oldPoints.push({ x: point.x, y: point.y }));
+        var executeScoreChangeHandlers = function (score, totalScore) {
+            for (let handler of scoreChangeHandlerSet) {
+                handler && handler(score, totalScore);
+            }
+        }
 
-            if (grid.checkReachEnd(block.points)) {
+        var intervalHandler = function (block) {
+            let oldPositions = [];
+            block.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+
+            if (grid.checkReachBottom(block.positions)) {
                 disposeActiveBlock();
                 let activeRows = grid.getActiveRows();
                 if (activeRows && activeRows.length) {
-                    self.lastScore = self.calcScore(activeRows);
-                    self.totalScore += self.lastScore;
+                    tetris.lastScore = calcScore(activeRows);
+                    tetris.totalScore += tetris.lastScore;
+                    executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore);
                     grid.inactivateRows(activeRows).repaint();
                 }
                 createActiveBlock();
             } else {
                 block.transform.down();
-                grid.inactivatePoints(oldPoints).activatePoints(block.points);
+                grid.inactivatePositions(oldPositions).activatePositions(block.positions);
             }
         }
 
         var getNewBlock = function () {
             let block = builder.getBlock();
-            let offsetX = Math.floor(Math.random() * (grid.gridPointData[0].length - 4));
-            block.points.map(point => point.x += offsetX);
+            let offsetX = Math.floor(Math.random() * (grid.gridData[0].length - block.getMaxOffsetX()));
+            block.positions.map(p => p.x += offsetX);
 
             return block;
         }
 
+        var executeBlockChangeHandlers = function (block) {
+            for (let handler of blockChangeHandlerSet) {
+                handler && handler(block.positions);
+            }
+        }
+
         var createActiveBlock = function () {
-            self.activeBlock = getNewBlock();
-            if (grid.checkReachEnd(self.activeBlock.points)) {
+            if (!nextBlock) {
+                nextBlock = getNewBlock();
+            }
+
+            activeBlock = nextBlock;
+
+            nextBlock = getNewBlock();
+            executeBlockChangeHandlers(nextBlock);
+
+            if (grid.checkReachBottom(activeBlock.positions)) {
                 disposeActiveBlock();
                 console.log("You fail.");
             } else {
-                grid.activatePoints(self.activeBlock.points);
-                self.activeBlockId = setInterval(() => intervalHandler(self.activeBlock), self.interval);
+                grid.activatePositions(activeBlock.positions);
+                activeBlockId = setInterval(() => intervalHandler(activeBlock), interval);
             }
         }
 
         var disposeActiveBlock = function () {
-            self.activeBlock = null;
-            clearInterval(self.activeBlockId);
-            self.activeBlockId = -1;
+            activeBlock = null;
+            clearInterval(activeBlockId);
+            activeBlockId = -1;
+        }
+
+        // Public functions
+        this.start = function () {
+            createActiveBlock();
+        }
+
+        this.stop = function () {
+            disposeActiveBlock();
+        }
+
+        this.addScoreChangeHandler = function (handler) {
+            handler && scoreChangeHandlerSet.add(handler);
+        }
+
+        this.addBlockChangeHandler = function (handler) {
+            handler && blockChangeHandlerSet.add(handler);
+        }
+
+        this.transform = {
+            down: function () {
+                if (activeBlock && !grid.checkReachBottom(activeBlock.positions)) {
+                    let oldPositions = [];
+                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+                    activeBlock.transform.down();
+                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                }
+            },
+            left: function () {
+                if (activeBlock && !grid.checkReachLeft(activeBlock.positions)) {
+                    let oldPositions = [];
+                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+                    activeBlock.transform.left();
+                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                }
+            },
+            right: function () {
+                if (activeBlock && !grid.checkReachRight(activeBlock.positions)) {
+                    let oldPositions = [];
+                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+                    activeBlock.transform.right();
+                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                }
+            },
+            rotate: function () {
+                if (activeBlock && !grid.checkReachLeft(activeBlock.positions)
+                    && !grid.checkReachRight(activeBlock.positions)
+                    && !grid.checkReachBottom(activeBlock.positions)) {
+                    let oldPositions = [];
+                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+                    activeBlock.transform.rotate();
+                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                }
+            }
         }
     }
 
-    tetris.engine = new Engine();
+    var singletonEngine = new Engine();
+
+    return singletonEngine;
 });

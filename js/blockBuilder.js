@@ -1,5 +1,5 @@
 define([
-    '../../js/components/block.js'
+    '../js/block.js'
 ], function (blockClass) {
     'use strict';
 
@@ -12,7 +12,7 @@ define([
 
     var getBlock = function () {
         let index = Math.floor(Math.random() * blockEnumeration.length);
-        return new blockClass(blockEnumeration[index]);
+        return new blockClass(blockEnumeration[1]);
     }
 
     return {

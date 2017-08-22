@@ -1,7 +1,7 @@
 define([], function () {
     'use strict';
 
-    function getFibonacciValue(n) {
+    var getFibonacciValue = function (n) {
         function calcFibonacci(num, prev1 = 1, prev2 = 1) {
             if (num <= 1) {
                 return prev2;
@@ -12,6 +12,11 @@ define([], function () {
 
         return calcFibonacci(n);
     }
+
+    // 只读代理：待实现
+    var readonlyProxy = new Proxy({}, {
+
+    });
 
     return {
         getFibonacciValue

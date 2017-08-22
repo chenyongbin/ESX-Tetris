@@ -1,8 +1,8 @@
 define(function () {
     'use strict';
     return window.TETRIS = window.TETRIS || {
-        container: null,
-        data: [],
-        inits: []
+        lastScore: 0,
+        totalScore: 0,
+        gridData: []
     };
 });

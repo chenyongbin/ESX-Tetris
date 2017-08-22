@@ -21,14 +21,14 @@ body,div,ul,li,span{
     display: inline-block;
     width: 16px;
     height: 16px;        
-    border: 1px solid #eee;    
+    border: 1px solid black;    
     margin: 1px;    
-    background-color: #879372;
+    background-color: #eee;
     opacity: 0.5;
 }
 
 .active{
-    background-color: orange;
+    background-color: blue;
 }
 
 .hightlight{

@@ -9,10 +9,11 @@
  */
 
 define([
-    "../js/var/container",
+    "../js/var/gridDOM.js",
+    "../js/var/gridConfig.js",
     "../js/var/tetris.js",
     "../js/lib/jquery.js"
-], function (container, tetris) {
+], function (gridDOM, gridConfig, tetris) {
     'use strict';
 
     function Grid() {
@@ -22,21 +23,17 @@ define([
 
         // Private variables
         var self = this;
-        var gridContainer = null;
+        var gridData = [];
         var gridBoundary = {
             x1: 0, x2: 0,
             y1: 0, y2: 0
         };
 
-        // Public properties
-        this.gridData = [];
-
         // Private methods
         var init = function () {
             let rCount = 25, cCount = 20;
 
-            gridContainer = $("div.grid");
-            for (let r = 0; r < rCount; r++) {
+            for (let r = 0; r < gridConfig.rowCount; r++) {
                 let rData = [];
                 let rHtml = ["<div class='g-row'>"];
                 for (let c = 0; c < cCount; c++) {
@@ -44,52 +41,55 @@ define([
                     rHtml.push("<span class='g-col'></span>");
                 }
                 rHtml.push("</div>");
-                self.gridData.push(rData);
-                gridContainer.append(rHtml.join(""));
-                //container.append(gridContainer);
+                gridData.push(rData);
+                gridDOM.append(rHtml.join(""));
+
             }
 
-            tetris.gridData = self.gridData;
-            gridBoundary.y2 = self.gridData.length - 1;
-            gridBoundary.x2 = self.gridData[0].length - 1;
+            gridBoundary.y2 = gridData.length - 1;
+            gridBoundary.x2 = gridData[0].length - 1;
         }
 
         var queryPosition = function (x, y) {
-            return gridContainer.find(".g-row:eq(" + y + ")").find(".g-col:eq(" + x + ")");
+            return gridDOM.find(".g-row:eq(" + y + ")").find(".g-col:eq(" + x + ")");
+        }
+
+        var queryRowPositions = function (y) {
+            return gridDOM.find(".g-row:eq(" + y + ")").find(".g-col");
         }
 
         var queryRow = function (y) {
-            return gridContainer.find(".g-row:eq(" + y + ")");
+            return gridDOM.find(".g-row:eq(" + y + ")");
         }
 
         var queryCol = function (x) {
-            return gridContainer.find(".g-col:eq(" + x + ")");
+            return gridDOM.find(".g-col:eq(" + x + ")");
         }
 
-        var repaintInActivatedRow = function (y, inactiveRows) {
-            if (r >= 0) {
+        var repaintInActivedRow = function (y, inactiveRows) {
+            if (y >= 0) {
                 if (inactiveRows && inactiveRows.length) {
                     let newY = y + inactiveRows.length;
-                    self.gridData[y].forEach((col, x) => {
+                    gridData[y].forEach((col, x) => {
                         if (col.active) {
                             col.active = false;
                             queryPosition(x, y).removeClass("active");
-                            self.gridContainer[newY][x].active = true;
+                            gridData[newY][x].active = true;
                             queryPosition(newY, x).addClass("active");
                         }
                     });
-                    return repaintInActivatedRow(y - 1, []);
+                    repaintInActivedRow(y - 1, []);
                 } else {
                     let tempInactiveRows = [];
                     while (y >= 0) {
-                        if (!self.gridData[y].includes(col => col.active == true)) {
+                        if (gridData[y].filter(col => col.active == false).length) {
                             inactiveRows.push(y);
                             y--;
                         } else {
                             break;
                         }
                     }
-                    return repaintInActivatedRow(y, tempInactiveRows);
+                    repaintInActivedRow(y, tempInactiveRows);
                 }
             }
         }
@@ -111,7 +111,7 @@ define([
 
             positions.forEach(p => {
                 queryPosition(p.x, p.y).addClass("active");
-                self.gridData[p.y][p.x].active = true;
+                gridData[p.y][p.x].active = true;
             });
 
             return self;
@@ -124,7 +124,7 @@ define([
 
             positions.forEach(p => {
                 queryPosition(p.x, p.y).removeClass("active");
-                self.gridData[p.y][p.x].active = false;
+                gridData[p.y][p.x].active = false;
             });
 
             return self;
@@ -135,7 +135,7 @@ define([
                 throw new Error("The rows was invalid.");
             }
 
-            rows.forEach(y => queryRow(y).addClass("hightlight"));
+            rows.forEach(y => queryRow(y).addClass("highlight"));
 
             return self;
         }
@@ -145,7 +145,7 @@ define([
                 throw new Error("The rows was invalid.");
             }
 
-            rows.forEach(y => queryRow(y).removeClass("hightlight"));
+            rows.forEach(y => queryRow(y).removeClass("highlight"));
 
             return self;
         }
@@ -156,8 +156,8 @@ define([
             }
 
             rows.forEach(y => {
-                queryRow(y).removeClass("active");
-                self.gridData[y].map(p => p.active = false);
+                queryRowPositions(y).removeClass("active");
+                gridData[y].map(p => p.active = false);
             });
 
             return self;
@@ -165,16 +165,40 @@ define([
 
         this.getActiveRows = function () {
             let rows = [];
-            self.gridData.forEach((row, y) => {
-                if (!row.includes(col => col.active == false)) {
+            gridData.forEach((row, y) => {
+                if (row.filter(col => col.active == false).length == 0) {
                     rows.push(y);
                 }
             });
+            return rows;
         }
 
         this.repaint = function () {
-            let y = self.gridData.length - 1;
-            repaintInActivatedRow(y, []);
+            let y = gridData.length - 1;
+            //repaintInActivedRow(y, []);
+
+            let inactiveRowCount = 0,
+                maxActiveRowIndex = -1;
+            while (y >= 0) {
+                if (gridData[y].filter(col => col.active == false).length == 0) {
+                    maxActiveRowIndex = maxActiveRowIndex < 0 ? y : maxActiveRowIndex;
+                } else if (maxActiveRowIndex >= 0) {
+                    gridData[y].map((col, x) => {
+                        if (col.active) {
+                            gridData[maxActiveRowIndex][x].active = true;
+                            queryPosition[maxActiveRowIndex][x].addClass("active");
+                        }
+                        col.active = false;
+                        queryRow[y][x].removeClass("active");
+                    });
+
+                    y++;
+                    maxActiveRowIndex--;
+                }
+
+                y--;
+            }
+
             return self;
         }
 
@@ -183,7 +207,7 @@ define([
                 throw new Error("The position was invalid.");
             }
 
-            let p = self.gridData[position.y][position.x];
+            let p = gridData[position.y][position.x];
             if (!p) {
                 throw new Error("The position:(" + position.x + "," + position.y + ") is beyond the boundary.");
             }
@@ -255,6 +279,13 @@ define([
             }
 
             return reachRight;
+        }
+
+        this.getGridDesc = function () {
+            return {
+                colCount: gridConfig.colCount,
+                rowCount: gridConfig.rowCount
+            };
         }
 
         init();

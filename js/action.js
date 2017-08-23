@@ -1,9 +1,7 @@
 define([
-    "../js/var/container.js",
-    "../js/var/tetris.js",
     "../js/var/actionEnumeration.js",
     "../js/lib/jquery.js"
-], function (container, tetris, actionEnum) {
+], function (actionEnum) {
     'use strict';
 
     function Action() {
@@ -17,31 +15,19 @@ define([
 
         // Private methods
         var init = function () {
-            $("#actionLeft").on("click", function () {
-                executeActionHandler(actionEnum.TRANSFORM_LEFT);
+            // Register button events
+            $("#actionLeft,#actionRotate,#actionRight,#actionSpace,#actionDown").on("click", function (e) {
+                switch (e.target.id) {
+                    case "actionLeft": executeActionHandler(actionEnum.TRANSFORM_LEFT); break;
+                    case "actionRotate": executeActionHandler(actionEnum.TRANSFORM_ROTATE); break;
+                    case "actionRight": executeActionHandler(actionEnum.TRANSFORM_RIGHT); break;
+                    case "actionSpace": executeActionHandler(actionEnum.TRANSFORM_SPACE); break;
+                    case "actionDown": executeActionHandler(actionEnum.TRANSFORM_DOWN); break;
+                    default: console.log("Invalid action."); break;
+                }                
             });
 
-            $("#actionRotate").on("click", function () {
-                executeActionHandler(actionEnum.TRANSFORM_ROTATE);
-            });
-
-            $("#actionRight").on("click", function () {
-                executeActionHandler(actionEnum.TRANSFORM_RIGHT);
-            });
-
-            $("#actionSpace").on("click", function () {
-                executeActionHandler(actionEnum.TRANSFORM_SPACE);
-            });
-
-            $("#actionDown").on("click", function () {
-                executeActionHandler(actionEnum.TRANSFORM_DOWN);
-            });
-
-            registerActions();
-        }
-
-        var registerActions = function () {
-            // Register keyboard actions
+            // Register keyboard event
             $(document).on("keydown", function (e) {
                 switch (e.keyCode) {
                     case 32: executeActionHandler(actionEnum.TRANSFORM_SPACE); break;

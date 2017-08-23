@@ -1,7 +1,7 @@
 define([
-    "../js/var/container.js",
+    "../js/var/announcementDOM.js",
     '../js/lib/jquery.js'
-], function (container) {
+], function (announceDOM) {
     'use strict';
 
     function Announcement() {
@@ -16,12 +16,14 @@ define([
         var init = function () { }
 
         // Public functions
-        this.handleScoreChange = function (score, totalScore) {
-            console.log("Current score is: " + score + ", and TotalScore is: " + totalScore);
+        this.handleScoreChange = function (score, totalScore, clearRowCount) {
+            $(".announce-score").html(score);
+            $(".announce-totalscore").html(totalScore);
+            $(".announce-clearcount").html(clearRowCount);
         }
 
         this.handleBlockChange = function (positions) {
-            console.log(positions);
+            
         }
 
         init();

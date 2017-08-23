@@ -13,7 +13,7 @@ define([
 
         // Private variables
         var self = this;
-        var interval = 500;
+        var interval = 1000;
         var activeBlock = null;
         var nextBlock = null;
         var activeBlockId = -1;
@@ -27,7 +27,7 @@ define([
 
             rows.sort((a, b) => a - b).forEach(r => {
                 if (lastR < 0) {
-                    lastR = r;
+                    lastR = r;                    
                 } else if (r - lastR == 1) {
                     calcCount++;
                 } else {
@@ -37,12 +37,16 @@ define([
                 }
             });
 
+            if (calcCount > 0) {
+                score += comm.getFibonacciValue(calcCount) * 10;
+            }
+
             return score;
         }
 
-        var executeScoreChangeHandlers = function (score, totalScore) {
+        var executeScoreChangeHandlers = function (score, totalScore, clearRowCount) {
             for (let handler of scoreChangeHandlerSet) {
-                handler && handler(score, totalScore);
+                handler && handler(score, totalScore, clearRowCount);
             }
         }
 
@@ -56,10 +60,16 @@ define([
                 if (activeRows && activeRows.length) {
                     tetris.lastScore = calcScore(activeRows);
                     tetris.totalScore += tetris.lastScore;
-                    executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore);
-                    grid.inactivateRows(activeRows).repaint();
+
+                    grid.highlightRows(activeRows);
+                    setTimeout(() => {
+                        grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
+                        createActiveBlock();
+                        executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
+                    }, 500);
+                } else {
+                    createActiveBlock();
                 }
-                createActiveBlock();
             } else {
                 block.transform.down();
                 grid.inactivatePositions(oldPositions).activatePositions(block.positions);
@@ -68,7 +78,7 @@ define([
 
         var getNewBlock = function () {
             let block = builder.getBlock();
-            let offsetX = Math.floor(Math.random() * (grid.gridData[0].length - block.getMaxOffsetX()));
+            let offsetX = Math.floor(Math.random() * (grid.getGridDesc().colCount - block.getMaxOffsetX()));
             block.positions.map(p => p.x += offsetX);
 
             return block;
@@ -129,6 +139,8 @@ define([
                     activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
                     activeBlock.transform.down();
                     grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                } else {
+                    createActiveBlock();
                 }
             },
             left: function () {
@@ -148,13 +160,22 @@ define([
                 }
             },
             rotate: function () {
-                if (activeBlock && !grid.checkReachLeft(activeBlock.positions)
+                let reachBottom = false;
+                if (activeBlock && !(reachBottom = grid.checkReachLeft(activeBlock.positions))
                     && !grid.checkReachRight(activeBlock.positions)
                     && !grid.checkReachBottom(activeBlock.positions)) {
                     let oldPositions = [];
                     activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
                     activeBlock.transform.rotate();
                     grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                } else if (!activeBlock || reachBottom) {
+                    createActiveBlock();
+                }
+            },
+            space: function () {
+                let curActiveBlockId = activeBlockId;
+                while (curActiveBlockId == activeBlockId) {
+                    self.transform.down();
                 }
             }
         }

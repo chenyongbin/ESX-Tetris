@@ -1,5 +1,5 @@
 define([    
-    "../../js/lib/jquery.js"
+    "../lib/jquery.js"
 ], function() {
     'use strict';
     

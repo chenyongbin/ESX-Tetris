@@ -12,8 +12,9 @@ define([
     "../js/var/gridDOM.js",
     "../js/var/gridConfig.js",
     "../js/var/tetris.js",
+    "../js/common.js",
     "../js/lib/jquery.js"
-], function (gridDOM, gridConfig, tetris) {
+], function (gridDOM, gridConfig, tetris, comm) {
     'use strict';
 
     function Grid() {
@@ -31,19 +32,16 @@ define([
 
         // Private methods
         var init = function () {
-            let rCount = 25, cCount = 20;
-
             for (let r = 0; r < gridConfig.rowCount; r++) {
                 let rData = [];
                 let rHtml = ["<div class='g-row'>"];
-                for (let c = 0; c < cCount; c++) {
+                for (let c = 0; c < gridConfig.colCount; c++) {
                     rData.push({ active: false });
                     rHtml.push("<span class='g-col'></span>");
                 }
                 rHtml.push("</div>");
                 gridData.push(rData);
                 gridDOM.append(rHtml.join(""));
-
             }
 
             gridBoundary.y2 = gridData.length - 1;
@@ -128,6 +126,13 @@ define([
             });
 
             return self;
+        }
+
+        this.inactivateAllPositions = function () {
+            gridData.forEach((row, y) => {
+                row.map(col => col.active = false);
+                queryRowPositions(y).removeClass("active");
+            });
         }
 
         this.highlightRows = function (rows) {
@@ -291,7 +296,7 @@ define([
         init();
     }
 
-    var singletonGrid = new Grid();
+    let singletonGrid = Object.create(comm.getObjectProxy(new Grid(), []));
 
     return singletonGrid;
 });

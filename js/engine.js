@@ -27,7 +27,7 @@ define([
 
             rows.sort((a, b) => a - b).forEach(r => {
                 if (lastR < 0) {
-                    lastR = r;                    
+                    lastR = r;
                 } else if (r - lastR == 1) {
                     calcCount++;
                 } else {
@@ -77,9 +77,19 @@ define([
         }
 
         var getNewBlock = function () {
-            let block = builder.getBlock();
+            let block = null;
+
+            if (!nextBlock) {
+                nextBlock = builder.getBlock();
+            }
+
+            block = nextBlock;
+
             let offsetX = Math.floor(Math.random() * (grid.getGridDesc().colCount - block.getMaxOffsetX()));
             block.positions.map(p => p.x += offsetX);
+
+            nextBlock = builder.getBlock();
+            executeBlockChangeHandlers(nextBlock);
 
             return block;
         }
@@ -91,15 +101,7 @@ define([
         }
 
         var createActiveBlock = function () {
-            if (!nextBlock) {
-                nextBlock = getNewBlock();
-            }
-
-            activeBlock = nextBlock;
-
-            nextBlock = getNewBlock();
-            executeBlockChangeHandlers(nextBlock);
-
+            activeBlock = getNewBlock();
             if (grid.checkReachBottom(activeBlock.positions)) {
                 disposeActiveBlock();
                 console.log("You fail.");
@@ -117,11 +119,22 @@ define([
 
         // Public functions
         this.start = function () {
-            createActiveBlock();
+            if (activeBlock) {
+                activeBlockId = setInterval(() => intervalHandler(activeBlock), interval);
+                self.transform.down();
+            } else {
+                createActiveBlock();
+            }
+        }
+
+        this.pause = function () {
+            clearInterval(activeBlockId);
         }
 
         this.stop = function () {
             disposeActiveBlock();
+            grid.inactivateAllPositions();
+            executeBlockChangeHandlers([]);
         }
 
         this.addScoreChangeHandler = function (handler) {
@@ -181,7 +194,7 @@ define([
         }
     }
 
-    var singletonEngine = new Engine();
+    var singletonEngine = Object.create(comm.getReadonlyProxy(new Engine(), []));
 
     return singletonEngine;
 });

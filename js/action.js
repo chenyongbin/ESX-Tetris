@@ -1,7 +1,9 @@
 define([
+    "../js/var/actionDOM.js",
     "../js/var/actionEnumeration.js",
+    "../js/common.js",
     "../js/lib/jquery.js"
-], function (actionEnum) {
+], function (actionDOM, actionEnum, comm) {
     'use strict';
 
     function Action() {
@@ -15,16 +17,41 @@ define([
 
         // Private methods
         var init = function () {
+            // Render html
+            actionDOM.html(`
+                <div class='action-left'>
+                    <div class='btn btn-start' id="actionStart">START</div>
+                    <div class='btn btn-pause ml10' id="actionPause">PAUSE</div>
+                    <div class='btn btn-stop ml10' id="actionStop">STOP</div>
+                </div>
+                <div class='action-right'>
+                    <div class='action-row'>                                        
+                    <div class='btn' id="actionRotate">ROTATE</div>
+                    </div>
+                    <div class='action-row'>                    
+                        <div class='btn' id="actionLeft">LEFT</div>
+                        <div class='btn btn-rectangle ml20 mr20'id="actionSpace">SPACE</div>
+                        <div class='btn' id="actionRight">RIGHT</div>
+                    </div>
+                    <div class='action-row'>
+                        <div class='btn' id="actionDown">DOWN</div>
+                    </div>
+                </div>                
+            `);
+
             // Register button events
-            $("#actionLeft,#actionRotate,#actionRight,#actionSpace,#actionDown").on("click", function (e) {
+            $("#actionStart,#actionPause,#actionStop,#actionLeft,#actionRotate,#actionRight,#actionSpace,#actionDown").on("click", function (e) {
                 switch (e.target.id) {
+                    case "actionStart": executeActionHandler(actionEnum.ACTION_START); break;
+                    case "actionPause": executeActionHandler(actionEnum.ACTION_PAUSE); break;
+                    case "actionStop": executeActionHandler(actionEnum.ACTION_STOP); break;
                     case "actionLeft": executeActionHandler(actionEnum.TRANSFORM_LEFT); break;
                     case "actionRotate": executeActionHandler(actionEnum.TRANSFORM_ROTATE); break;
                     case "actionRight": executeActionHandler(actionEnum.TRANSFORM_RIGHT); break;
                     case "actionSpace": executeActionHandler(actionEnum.TRANSFORM_SPACE); break;
                     case "actionDown": executeActionHandler(actionEnum.TRANSFORM_DOWN); break;
                     default: console.log("Invalid action."); break;
-                }                
+                } 
             });
 
             // Register keyboard event
@@ -63,7 +90,7 @@ define([
         init();
     }
 
-    var singletonAction = new Action();
+    var singletonAction = Object.create(comm.getReadonlyProxy(new Action(), []));
 
     return singletonAction;
 });

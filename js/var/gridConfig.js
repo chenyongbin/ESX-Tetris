@@ -2,7 +2,7 @@ define(function () {
     'use strict';
 
     return {
-        rowCount: 25,
-        colCount: 20
+        rowCount: 20,
+        colCount: 15
     }
 });

@@ -1,3 +1,7 @@
+.ml10{
+    margin-left: 10px;
+}
+
 .ml20{
     margin-left: 20px;
 }
@@ -6,71 +10,43 @@
     margin-right: 20px;
 }
 
-.container{
-    margin: 20px auto;
-    width: 600px;
-    height: 700px;
+.mt{
+    margin-top: 5px;
 }
 
-.container-up{
-    padding: 0;
+.mb5{
+    margin-bottom: 5px;
+}
+
+.game-box{
+    margin: 20px auto;
+    padding: 10px;
+    width: 470px;
+    height: 550px;
+    border: 2px solid #4210D7;
+    border-radius: 10px;
+}
+
+.game-box-title{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font:bold 24px arial;
+}
+
+.game-box-screen{
     margin: 0;
-    height: 502px;
+    width: 470px;
+    height: 400px;
     position: relative;
 }
 
 .grid{
     border: 1px solid black;
-    width: 402px;
+    width: 300px;
     height: 100%;
     float: left;
-}
-
-.announcement{
-    border: 1px solid black;
-    padding-left: 30px;
-    padding-right: 10px;
-    width: 140px;
-    height: 100%;
-    float: right;
-}
-
-.action{
-    margin-top:20px;
-    width: 480px;
-    height: 180px;
-}
-
-.action-up,.action-down{
-    width: 100%;
-    height: 70px;
-    line-height: 70px;
-    text-align: center;
-}
-
-.action-middle{
-    width: 100%;
-    height: 70px;
-    line-height: 70px;
-    text-align: center;
-}
-
-.btn{
-    display: inline-block;
-    border: 1px solid black;
-    text-align: center;
-    line-height: 50px;
-    width: 50px;
-    height: 50px;
-    border-radius: 25px;
-    font-size: 6px;
-    color:white;
-    background-color: #278EBB; 
-    user-select: none;
-}
-
-.btn:hover{
-    cursor: pointer;
 }
 
 .g-row{
@@ -95,4 +71,81 @@
 
 .highlight{
     background-color:red;
+}
+
+.announcement{
+    border: 1px solid black;
+    padding-left: 10px;    
+    width: 150px;
+    height: 100%;
+    float: right;
+}
+
+.announcement h4,p{
+    margin: 8px 0 11px 0;
+    padding: 0;
+}
+
+.game-box-actionbar{
+    margin-top:5px;
+    width: 100%;
+    height: 120px;
+    border: 1px solid #2C6578;
+}
+
+.action-left, .action-right{
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+    position: relative;    
+}
+
+.action-left{
+    float: left;
+    width: 150px;
+}
+
+.action-right{
+    float: right;
+    width: 270px;    
+}
+
+.action-row{
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+}
+
+.btn{
+    display: inline-block;
+    border: 1px solid black;    
+    text-align: center;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    font-size: 3px;
+    color:white;
+    background-color: #2765D0; 
+    user-select: none;
+}
+
+.btn-rectangle{
+    border-radius: 5px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0 5px;    
+}
+
+.btn-start{
+    background-color: #089811;
+}
+
+.btn-stop{    
+    background-color: #DC0A16;
+}
+
+.btn:hover{
+    cursor: pointer;
 }

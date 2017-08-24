@@ -8,31 +8,16 @@
 </head>
 
 <body>
-    <div id="container" class="container">
-        <div class="container-up">
+    <div id="gameBox" class="game-box">
+        <div class="game-box-title">H5-TETRIS</div>
+        <div class="game-box-screen">
             <div class="grid"></div>
-            <div class="announcement">
-                <h4>Score</h4>
-                <p class="announce-score">0</p>
-                <h4>Total Score</h4>
-                <p class="announce-totalscore">0</p>
-                <h4>Rows Cleared</h4>
-                <p class="announce-clearcount">0</p>
-            </div>
+            <div class="announcement"></div>
         </div>
-        <div class="action">
-            <div class='action-up'>
-                <div class='btn' id="actionRotate">ROTATE</div>
-            </div>
-            <div class='action-middle'>
-                <div class='btn' id="actionLeft">LEFT</div>
-                <div class='btn ml20 mr20'id="actionSpace">SPACE</div>
-                <div class='btn' id="actionRight">RIGHT</div>
-            </div>
-            <div class='action-down'>
-                <div class='btn' id="actionDown">DOWN</div>
-            </div>
+        <div class="game-box-actionbar">            
+            <div class="action"></div>
         </div>
+
     </div>
     <script type="text/javascript" src="js/lib/require.js" data-main="js/main"></script>
 </body>

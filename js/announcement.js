@@ -33,7 +33,7 @@ define([
                 grid.push("<div class='g-row'>");
                 let cols = [];
                 for (let x = 0; x < gridColCount; x++) {
-                    cols.push("<span class='g-col'></span>");
+                    cols.push("<span class='g-col g-col-none'></span>");
                 }
                 grid.push(cols.join(""));
                 grid.push("</div>");
@@ -45,13 +45,13 @@ define([
             let offsetX = 0, offsetY = 0;
 
             for (let y = 0; y < gridRowCount; y++) {
-                announceDOM.find(".g-row:eq(" + (y + offsetY) + ")").find(".g-col").removeClass("active");
+                announceDOM.find(".g-row:eq(" + (y + offsetY) + ")>.g-col").removeClass("active");
             }
 
             if (positions && positions.length) {
 
                 let sortX = positions.sort((a, b) => b.x - a.x);
-                if (sortX[0].x >= gridColCount) {
+                if (sortX[0].x >= gridColCount) {                    
                     throw new Error(`The positions[${comm.convertPositionsToString(positions)}] of next block was invalid.`);
                 } else {
                     offsetX = sortX[0].x >= 1 ? Math.floor((gridColCount - sortX[0].x) / 2)
@@ -67,7 +67,7 @@ define([
                 }
 
                 positions.map(p =>
-                    announceDOM.find(".g-row:eq(" + (p.y + offsetY) + ")").find(".g-col:eq(" + (p.x + offsetX) + ")").addClass("active"));
+                    announceDOM.find(".g-row:eq(" + (p.y + offsetY) + ")>.g-col:eq(" + (p.x + offsetX) + ")").addClass("active"));
             }
         }
 
@@ -85,7 +85,8 @@ define([
         init();
     }
 
-    var singletonAnnouncement = Object.create(comm.getReadonlyProxy(new Announcement(), []));
+    var singletonAnnouncement = new Announcement();
+    Reflect.preventExtensions(singletonAnnouncement);
 
     return singletonAnnouncement;
 });

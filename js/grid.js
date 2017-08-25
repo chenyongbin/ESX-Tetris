@@ -23,15 +23,15 @@ define([
         }
 
         // Private variables
-        var self = this;
-        var gridData = [];
-        var gridBoundary = {
+        let self = this;
+        let gridData = [];
+        let gridBoundary = {
             x1: 0, x2: 0,
             y1: 0, y2: 0
         };
 
         // Private methods
-        var init = function () {
+        let init = function () {
             for (let r = 0; r < gridConfig.rowCount; r++) {
                 let rData = [];
                 let rHtml = ["<div class='g-row'>"];
@@ -48,51 +48,19 @@ define([
             gridBoundary.x2 = gridData[0].length - 1;
         }
 
-        var queryPosition = function (x, y) {
-            return gridDOM.find(".g-row:eq(" + y + ")").find(".g-col:eq(" + x + ")");
+        let queryPosition = function (x, y) {
+            return gridDOM.find(".g-row:eq(" + y + ")>.g-col:eq(" + x + ")");
         }
 
-        var queryRowPositions = function (y) {
-            return gridDOM.find(".g-row:eq(" + y + ")").find(".g-col");
+        let queryRowPositions = function (y) {
+            return gridDOM.find(".g-row:eq(" + y + ")>.g-col");
         }
 
-        var queryRow = function (y) {
+        let queryRow = function (y) {
             return gridDOM.find(".g-row:eq(" + y + ")");
         }
 
-        var queryCol = function (x) {
-            return gridDOM.find(".g-col:eq(" + x + ")");
-        }
-
-        var repaintInActivedRow = function (y, inactiveRows) {
-            if (y >= 0) {
-                if (inactiveRows && inactiveRows.length) {
-                    let newY = y + inactiveRows.length;
-                    gridData[y].forEach((col, x) => {
-                        if (col.active) {
-                            col.active = false;
-                            queryPosition(x, y).removeClass("active");
-                            gridData[newY][x].active = true;
-                            queryPosition(newY, x).addClass("active");
-                        }
-                    });
-                    repaintInActivedRow(y - 1, []);
-                } else {
-                    let tempInactiveRows = [];
-                    while (y >= 0) {
-                        if (gridData[y].filter(col => col.active == false).length) {
-                            inactiveRows.push(y);
-                            y--;
-                        } else {
-                            break;
-                        }
-                    }
-                    repaintInActivedRow(y, tempInactiveRows);
-                }
-            }
-        }
-
-        var hasPosition = function (positionCollection, position) {
+        let hasPosition = function (positionCollection, position) {
             if (!positionCollection || positionCollection.length == 0) {
                 return false;
             }
@@ -180,24 +148,21 @@ define([
 
         this.repaint = function () {
             let y = gridData.length - 1;
-            //repaintInActivedRow(y, []);
 
             let inactiveRowCount = 0,
                 maxActiveRowIndex = -1;
             while (y >= 0) {
-                if (gridData[y].filter(col => col.active == false).length == 0) {
+                if (gridData[y].filter(col => col.active == true).length == 0) {
                     maxActiveRowIndex = maxActiveRowIndex < 0 ? y : maxActiveRowIndex;
                 } else if (maxActiveRowIndex >= 0) {
                     gridData[y].map((col, x) => {
                         if (col.active) {
                             gridData[maxActiveRowIndex][x].active = true;
-                            queryPosition[maxActiveRowIndex][x].addClass("active");
+                            queryPosition(x, maxActiveRowIndex).addClass("active");
                         }
                         col.active = false;
-                        queryRow[y][x].removeClass("active");
+                        queryPosition(x, y).removeClass("active");
                     });
-
-                    y++;
                     maxActiveRowIndex--;
                 }
 
@@ -296,7 +261,8 @@ define([
         init();
     }
 
-    let singletonGrid = Object.create(comm.getObjectProxy(new Grid(), []));
+    let singletonGrid = new Grid();
+    Reflect.preventExtensions(singletonGrid);
 
     return singletonGrid;
 });

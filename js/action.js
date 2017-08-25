@@ -51,7 +51,7 @@ define([
                     case "actionSpace": executeActionHandler(actionEnum.TRANSFORM_SPACE); break;
                     case "actionDown": executeActionHandler(actionEnum.TRANSFORM_DOWN); break;
                     default: console.log("Invalid action."); break;
-                } 
+                }
             });
 
             // Register keyboard event
@@ -90,7 +90,8 @@ define([
         init();
     }
 
-    var singletonAction = Object.create(comm.getReadonlyProxy(new Action(), []));
+    var singletonAction = new Action();
+    Reflect.preventExtensions(singletonAction);
 
     return singletonAction;
 });

@@ -14,7 +14,9 @@ define([
 
     var getBlock = function () {
         let index = Math.floor(Math.random() * blockEnumeration.length);
-        return new blockConstructor(blockEnumeration[index]);
+        let newBlock = new blockConstructor(blockEnumeration[index]);
+        Reflect.preventExtensions(newBlock);
+        return newBlock;
     }
 
     return {

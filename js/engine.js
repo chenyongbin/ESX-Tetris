@@ -12,16 +12,16 @@ define([
         }
 
         // Private variables
-        var self = this;
-        var interval = 1000;
-        var activeBlock = null;
-        var nextBlock = null;
-        var activeBlockId = -1;
-        var scoreChangeHandlerSet = new Set();
-        var blockChangeHandlerSet = new Set();
+        let self = this;
+        let interval = 1000;
+        let activeBlock = null;
+        let nextBlock = null;
+        let activeBlockId = -1;
+        let scoreChangeHandlerSet = new Set();
+        let blockChangeHandlerSet = new Set();
 
         // Private methods
-        var calcScore = function (rows) {
+        let calcScore = function (rows) {
             let score = 0;
             let lastR = -1, calcCount = 1;
 
@@ -44,39 +44,31 @@ define([
             return score;
         }
 
-        var executeScoreChangeHandlers = function (score, totalScore, clearRowCount) {
+        let executeScoreChangeHandlers = function (score, totalScore, clearRowCount) {
             for (let handler of scoreChangeHandlerSet) {
                 handler && handler(score, totalScore, clearRowCount);
             }
         }
 
-        var intervalHandler = function (block) {
-            let oldPositions = [];
-            block.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
+        let reachBottomHandler = function () {
+            disposeActiveBlock();
+            let activeRows = grid.getActiveRows();
+            if (activeRows && activeRows.length) {
+                tetris.lastScore = calcScore(activeRows);
+                tetris.totalScore += tetris.lastScore;
 
-            if (grid.checkReachBottom(block.positions)) {
-                disposeActiveBlock();
-                let activeRows = grid.getActiveRows();
-                if (activeRows && activeRows.length) {
-                    tetris.lastScore = calcScore(activeRows);
-                    tetris.totalScore += tetris.lastScore;
-
-                    grid.highlightRows(activeRows);
-                    setTimeout(() => {
-                        grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
-                        createActiveBlock();
-                        executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
-                    }, 500);
-                } else {
+                grid.highlightRows(activeRows);
+                setTimeout(() => {
+                    grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
                     createActiveBlock();
-                }
+                    executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
+                }, 300);
             } else {
-                block.transform.down();
-                grid.inactivatePositions(oldPositions).activatePositions(block.positions);
+                createActiveBlock();
             }
         }
 
-        var getNewBlock = function () {
+        let getNewBlock = function () {
             let block = null;
 
             if (!nextBlock) {
@@ -94,37 +86,36 @@ define([
             return block;
         }
 
-        var executeBlockChangeHandlers = function (block) {
+        let executeBlockChangeHandlers = function (block) {
             for (let handler of blockChangeHandlerSet) {
                 handler && handler(block.positions);
             }
         }
 
-        var createActiveBlock = function () {
+        let createActiveBlock = function () {
+            if (activeBlock) {
+                disposeActiveBlock();
+            }
+
             activeBlock = getNewBlock();
             if (grid.checkReachBottom(activeBlock.positions)) {
                 disposeActiveBlock();
                 console.log("You fail.");
             } else {
                 grid.activatePositions(activeBlock.positions);
-                activeBlockId = setInterval(() => intervalHandler(activeBlock), interval);
+                activeBlockId = setInterval(self.transform.down, interval);
             }
         }
 
-        var disposeActiveBlock = function () {
-            activeBlock = null;
+        let disposeActiveBlock = function () {
             clearInterval(activeBlockId);
+            activeBlock = null;
             activeBlockId = -1;
         }
 
         // Public functions
         this.start = function () {
-            if (activeBlock) {
-                activeBlockId = setInterval(() => intervalHandler(activeBlock), interval);
-                self.transform.down();
-            } else {
-                createActiveBlock();
-            }
+            createActiveBlock();
         }
 
         this.pause = function () {
@@ -153,7 +144,7 @@ define([
                     activeBlock.transform.down();
                     grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
                 } else {
-                    createActiveBlock();
+                    reachBottomHandler();
                 }
             },
             left: function () {
@@ -194,7 +185,8 @@ define([
         }
     }
 
-    var singletonEngine = Object.create(comm.getReadonlyProxy(new Engine(), []));
+    var singletonEngine = new Engine();
+    Reflect.preventExtensions(singletonEngine);
 
     return singletonEngine;
 });

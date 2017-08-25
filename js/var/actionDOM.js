@@ -3,5 +3,5 @@ define([
 ], function() {
     'use strict';
     
-    return $("div.action");
+    return $("div.game-box-actionbar");
 });

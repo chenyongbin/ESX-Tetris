@@ -48,16 +48,28 @@ define([
             gridBoundary.x2 = gridData[0].length - 1;
         }
 
-        let queryPosition = function (x, y) {
-            return gridDOM.find(".g-row:eq(" + y + ")>.g-col:eq(" + x + ")");
+        let activate = function (y, x = -1) {
+            if (y >= gridBoundary.y1 && y <= gridBoundary.y2) {
+                if (x >= gridBoundary.x1 && x <= gridBoundary.x2) {
+                    gridDOM.find(".g-row:eq(" + y + ")>.g-col:eq(" + x + ")").addClass("active");
+                    gridData[y][x].active = true;
+                } else {
+                    gridDOM.find(".g-row:eq(" + y + ")>.g-col").addClass("active");
+                    gridData[y].map(col => col.active = true);
+                }
+            }
         }
 
-        let queryRowPositions = function (y) {
-            return gridDOM.find(".g-row:eq(" + y + ")>.g-col");
-        }
-
-        let queryRow = function (y) {
-            return gridDOM.find(".g-row:eq(" + y + ")");
+        let inactivate = function (y, x = -1) {
+            if (y >= gridBoundary.y1 && y <= gridBoundary.y2) {
+                if (x >= gridBoundary.x1 && x <= gridBoundary.x2) {
+                    gridDOM.find(".g-row:eq(" + y + ")>.g-col:eq(" + x + ")").removeClass("active");
+                    gridData[y][x].active = false;
+                } else {
+                    gridDOM.find(".g-row:eq(" + y + ")>.g-col").removeClass("active");
+                    gridData[y].map(col => col.active = false);
+                }
+            }
         }
 
         let hasPosition = function (positionCollection, position) {
@@ -75,10 +87,7 @@ define([
                 throw new Error("The positions was invalid.");
             }
 
-            positions.forEach(p => {
-                queryPosition(p.x, p.y).addClass("active");
-                gridData[p.y][p.x].active = true;
-            });
+            positions.map(p => activate(p.y, p.x));
 
             return self;
         }
@@ -88,19 +97,13 @@ define([
                 throw new Error("The positions was invalid.");
             }
 
-            positions.forEach(p => {
-                queryPosition(p.x, p.y).removeClass("active");
-                gridData[p.y][p.x].active = false;
-            });
+            positions.map(p => inactivate(p.y, p.x));
 
             return self;
         }
 
         this.inactivateAllPositions = function () {
-            gridData.forEach((row, y) => {
-                row.map(col => col.active = false);
-                queryRowPositions(y).removeClass("active");
-            });
+            gridData.map((row, y) => inactivate(y));
         }
 
         this.highlightRows = function (rows) {
@@ -108,7 +111,7 @@ define([
                 throw new Error("The rows was invalid.");
             }
 
-            rows.forEach(y => queryRow(y).addClass("highlight"));
+            rows.forEach(y => gridDOM.find(".g-row:eq(" + y + ")").addClass("highlight"));
 
             return self;
         }
@@ -118,7 +121,7 @@ define([
                 throw new Error("The rows was invalid.");
             }
 
-            rows.forEach(y => queryRow(y).removeClass("highlight"));
+            rows.forEach(y => gridDOM.find(".g-row:eq(" + y + ")").removeClass("highlight"));
 
             return self;
         }
@@ -128,10 +131,7 @@ define([
                 throw new Error("The rows was invalid.");
             }
 
-            rows.forEach(y => {
-                queryRowPositions(y).removeClass("active");
-                gridData[y].map(p => p.active = false);
-            });
+            rows.map(y => inactivate(y));
 
             return self;
         }
@@ -157,11 +157,9 @@ define([
                 } else if (maxActiveRowIndex >= 0) {
                     gridData[y].map((col, x) => {
                         if (col.active) {
-                            gridData[maxActiveRowIndex][x].active = true;
-                            queryPosition(x, maxActiveRowIndex).addClass("active");
+                            activate(maxActiveRowIndex, x);
                         }
-                        col.active = false;
-                        queryPosition(x, y).removeClass("active");
+                        inactivate(y, x);
                     });
                     maxActiveRowIndex--;
                 }
@@ -177,12 +175,29 @@ define([
                 throw new Error("The position was invalid.");
             }
 
-            let p = gridData[position.y][position.x];
-            if (!p) {
-                throw new Error("The position:(" + position.x + "," + position.y + ") is beyond the boundary.");
+            if ((position.x >= gridBoundary.x1 && position.x <= gridBoundary.x2)
+                && (position.y >= gridBoundary.y1 && position.y <= gridBoundary.y2)) {
+                return gridData[position.y][position.x].active;
+            } else {
+                return false;
+                //throw new Error("The position:(" + position.x + "," + position.y + ") is beyond the boundary.");
+            }
+        }
+
+        this.checkPositionsWithinGrid = function (positions) {
+            if (!positions || positions.length == 0) {
+                throw new Error("The positions was invalid.");
             }
 
-            return p.active;
+            let withinGrid = true;
+            for (let p of positions) {
+                if ((p.x < gridBoundary.x1 || p.x > gridBoundary.x2)
+                    || (p.y < gridBoundary.y1 || p.y > gridBoundary.y2)) {
+                    withinGrid = false;
+                    break;
+                }
+            }
+            return withinGrid;
         }
 
         this.checkReachBottom = function (positions) {
@@ -192,7 +207,7 @@ define([
 
             let reachBottom = false;
             for (let p of positions) {
-                if (p.y < gridBoundary.y1 || p.y >= gridBoundary.y2) {
+                if (p.y >= gridBoundary.y2) {
                     reachBottom = true;
                     break;
                 }

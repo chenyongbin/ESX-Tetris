@@ -12,11 +12,11 @@ define([
         }
 
         // Private variables
-        var self = this;
-        var actionHandlerMap = new Map();
+        let self = this;
+        let actionHandlerMap = new Map();
 
         // Private methods
-        var init = function () {
+        let init = function () {
             // Render html
             actionDOM.html(`
                 <div class='action-left'>
@@ -45,29 +45,30 @@ define([
                     case "actionStart": executeActionHandler(actionEnum.ACTION_START); break;
                     case "actionPause": executeActionHandler(actionEnum.ACTION_PAUSE); break;
                     case "actionStop": executeActionHandler(actionEnum.ACTION_STOP); break;
-                    case "actionLeft": executeActionHandler(actionEnum.TRANSFORM_LEFT); break;
-                    case "actionRotate": executeActionHandler(actionEnum.TRANSFORM_ROTATE); break;
-                    case "actionRight": executeActionHandler(actionEnum.TRANSFORM_RIGHT); break;
-                    case "actionSpace": executeActionHandler(actionEnum.TRANSFORM_SPACE); break;
-                    case "actionDown": executeActionHandler(actionEnum.TRANSFORM_DOWN); break;
-                    default: console.log("Invalid action."); break;
+                    case "actionLeft": executeActionHandler(actionEnum.TRANSITION_LEFT); break;
+                    case "actionRotate": executeActionHandler(actionEnum.TRANSITION_ROTATE); break;
+                    case "actionRight": executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
+                    case "actionSpace": executeActionHandler(actionEnum.TRANSITION_SPACE); break;
+                    case "actionDown": executeActionHandler(actionEnum.TRANSITION_DOWN); break;
+                    default: throw new Error(`Unregistered keypress event with id=${e.target.id}.`); break;
                 }
             });
 
             // Register keyboard event
             $(document).on("keydown", function (e) {
                 switch (e.keyCode) {
-                    case 32: executeActionHandler(actionEnum.TRANSFORM_SPACE); break;
-                    case 37: executeActionHandler(actionEnum.TRANSFORM_LEFT); break;
-                    case 38: executeActionHandler(actionEnum.TRANSFORM_ROTATE); break;
-                    case 39: executeActionHandler(actionEnum.TRANSFORM_RIGHT); break;
-                    case 40: executeActionHandler(actionEnum.TRANSFORM_DOWN); break;
+                    case 32: executeActionHandler(actionEnum.TRANSITION_SPACE); break;
+                    case 37: executeActionHandler(actionEnum.TRANSITION_LEFT); break;
+                    case 38: executeActionHandler(actionEnum.TRANSITION_ROTATE); break;
+                    case 39: executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
+                    case 40: executeActionHandler(actionEnum.TRANSITION_DOWN); break;
+                    default: throw new Error(`Unregistered keypress event with keyCode=${e.keyCode}`);
                 }
                 e.preventDefault();
             });
         }
 
-        var executeActionHandler = function (actionName, ...args) {
+        let executeActionHandler = function (actionName, ...args) {
             if (actionHandlerMap.has(actionName)) {
                 let handlers = actionHandlerMap.get(actionName);
                 if (handlers && handlers.size) {
@@ -90,7 +91,7 @@ define([
         init();
     }
 
-    var singletonAction = new Action();
+    let singletonAction = new Action();
     Reflect.preventExtensions(singletonAction);
 
     return singletonAction;

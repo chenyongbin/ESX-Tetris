@@ -1,21 +1,21 @@
 define(function () {
     'use strict';
 
-    const TRANSFORM_LEFT = "transform_left",
-        TRANSFORM_RIGHT = "transform_right",
-        TRANSFORM_DOWN = "transform_down",
-        TRANSFORM_ROTATE = "transform_rotate",
-        TRANSFORM_SPACE = "transform_space",
+    const TRANSITION_LEFT = "transition_left",
+        TRANSITION_RIGHT = "transition_right",
+        TRANSITION_DOWN = "transition_down",
+        TRANSITION_ROTATE = "transition_rotate",
+        TRANSITION_SPACE = "transition_space",
         ACTION_START = "action_start",
         ACTION_PAUSE = "action_pause",
         ACTION_STOP = "action_stop";
 
     return {
-        TRANSFORM_LEFT,
-        TRANSFORM_RIGHT,
-        TRANSFORM_DOWN,
-        TRANSFORM_ROTATE,
-        TRANSFORM_SPACE,
+        TRANSITION_LEFT,
+        TRANSITION_RIGHT,
+        TRANSITION_DOWN,
+        TRANSITION_ROTATE,
+        TRANSITION_SPACE,
         ACTION_START,
         ACTION_PAUSE,
         ACTION_STOP

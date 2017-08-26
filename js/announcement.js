@@ -11,12 +11,12 @@ define([
         }
 
         // Private variables
-        var self = this;
-        var gridRowCount = 8;
-        var gridColCount = 7;
+        let self = this;
+        let gridRowCount = 8;
+        let gridColCount = 7;
 
         // Private methods
-        var init = function () {
+        let init = function () {
             announceDOM.html(`
                 <h4>得分</h4>
                 <p class="announce-score">0</p>
@@ -41,7 +41,7 @@ define([
             announceDOM.find(".announce-grid").html(grid.join(""));
         }
 
-        var activatePositions = function (positions) {
+        let activatePositions = function (positions) {
             let offsetX = 0, offsetY = 0;
 
             for (let y = 0; y < gridRowCount; y++) {
@@ -85,7 +85,7 @@ define([
         init();
     }
 
-    var singletonAnnouncement = new Announcement();
+    let singletonAnnouncement = new Announcement();
     Reflect.preventExtensions(singletonAnnouncement);
 
     return singletonAnnouncement;

@@ -12,13 +12,22 @@ define([
         }
 
         // Private variables
-        let self = this;
-        let interval = 1000;
-        let activeBlock = null;
-        let nextBlock = null;
-        let activeBlockId = -1;
-        let scoreChangeHandlerSet = new Set();
-        let blockChangeHandlerSet = new Set();
+        let self = this,
+            interval = 1000;
+
+        let activeBlock = null,
+            activeBlockId = -1,
+            activeBlockPositions = [],
+            nextActiveBlock = null;
+
+        let reachedLeft = false,
+            reachedRight = false,
+            reachedBottom = false,
+            paused = false,
+            failed = false;
+
+        let scoreChangedHandlerSet = new Set(),
+            blcokChangedHandlerSet = new Set();
 
         // Private methods
         let calcScore = function (rows) {
@@ -44,148 +53,187 @@ define([
             return score;
         }
 
-        let executeScoreChangeHandlers = function (score, totalScore, clearRowCount) {
-            for (let handler of scoreChangeHandlerSet) {
+        let executeScoreChangedHandlers = function (score, totalScore, clearRowCount) {
+            for (let handler of scoreChangedHandlerSet) {
                 handler && handler(score, totalScore, clearRowCount);
             }
         }
 
-        let reachBottomHandler = function () {
-            disposeActiveBlock();
-            let activeRows = grid.getActiveRows();
-            if (activeRows && activeRows.length) {
-                tetris.lastScore = calcScore(activeRows);
-                tetris.totalScore += tetris.lastScore;
+        let executeBlockChangedHandlers = function (positions) {
+            for (let handler of blcokChangedHandlerSet) {
+                handler && handler(positions);
+            }
+        }
 
-                grid.highlightRows(activeRows);
-                setTimeout(() => {
-                    grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
-                    createActiveBlock();
-                    executeScoreChangeHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
-                }, 300);
+        let getStartPositions = function (blockPositions) {
+            if (!blockPositions || blockPositions.length == 0) {
+                throw new Error("The new block was invalid.");
+            }
+
+            let newPositions = [];
+            let maxX = 0, maxY = 0;
+            let sortedPositions1 = blockPositions.sort((p1, p2) => p2.x - p1.x),
+                sortedPositions2 = blockPositions.sort((p1, p2) => p2.y - p1.y);
+
+            if (sortedPositions1 && sortedPositions1.length) {
+                maxX = sortedPositions1[0].x;
+            }
+            if (sortedPositions2 && sortedPositions2.length) {
+                maxY = sortedPositions2[0].y;
+            }
+
+            let offsetX = Math.floor((grid.getGridDesc().colCount - maxX - 1) / 2);
+            blockPositions.forEach(p => {
+                newPositions.push({
+                    x: p.x + offsetX,
+                    y: p.y - maxY - 1
+                });
+            });
+
+            return newPositions;
+        }
+
+        let activeBlockPositionsChangedHandler = function (newPositions) {
+            if (!newPositions || newPositions.length == 0) {
+                throw new Error("The newPositions was invalid.");
+            }
+
+            reachedLeft = false;
+            reachedRight = false;
+            grid.inactivatePositions(activeBlockPositions).activatePositions(newPositions);
+            activeBlockPositions = newPositions;
+
+            if (reachedBottom = grid.checkReachBottom(newPositions)) {
+                destroyActiveBlock();
+                let activeRows = grid.getActiveRows();
+                if (activeRows && activeRows.length) {
+                    tetris.lastScore = calcScore(activeRows);
+                    tetris.totalScore += tetris.lastScore;
+
+                    grid.highlightRows(activeRows);
+                    setTimeout(() => {
+                        grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
+                        buildActiveBlock();
+                        executeScoreChangedHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
+                    }, 300);
+                } else {
+                    buildActiveBlock();
+                }
             } else {
-                createActiveBlock();
+                reachedLeft = grid.checkReachLeft(newPositions);
+                reachedRight = grid.checkReachRight(newPositions);
             }
         }
 
-        let getNewBlock = function () {
-            let block = null;
-
-            if (!nextBlock) {
-                nextBlock = builder.getBlock();
+        let buildActiveBlock = function () {
+            if (!nextActiveBlock) {
+                nextActiveBlock = builder.getBlock();
             }
 
-            block = nextBlock;
+            activeBlock = nextActiveBlock;
+            activeBlockPositions = getStartPositions(activeBlock.getPositions());
+            activeBlock.initializeStartPositions(activeBlockPositions);
+            activeBlock.addPositionsChangedHandler(activeBlockPositionsChangedHandler);
 
-            let offsetX = Math.floor(Math.random() * (grid.getGridDesc().colCount - block.getMaxOffsetX()));
-            block.positions.map(p => p.x += offsetX);
+            nextActiveBlock = builder.getBlock();
+            executeBlockChangedHandlers(nextActiveBlock.getPositions());
 
-            nextBlock = builder.getBlock();
-            executeBlockChangeHandlers(nextBlock);
-
-            return block;
-        }
-
-        let executeBlockChangeHandlers = function (block) {
-            for (let handler of blockChangeHandlerSet) {
-                handler && handler(block.positions);
-            }
-        }
-
-        let createActiveBlock = function () {
-            if (activeBlock) {
-                disposeActiveBlock();
-            }
-
-            activeBlock = getNewBlock();
-            if (grid.checkReachBottom(activeBlock.positions)) {
-                disposeActiveBlock();
-                console.log("You fail.");
+            if (reachedBottom = grid.checkReachBottom(activeBlockPositions)) {
+                destroyActiveBlock();
+                failed = true;
+                console.log("You failed.");
             } else {
-                grid.activatePositions(activeBlock.positions);
-                activeBlockId = setInterval(self.transform.down, interval);
+                activeBlockId = setInterval(self.transition.down, interval);
             }
         }
 
-        let disposeActiveBlock = function () {
+        let destroyActiveBlock = function () {
             clearInterval(activeBlockId);
-            activeBlock = null;
             activeBlockId = -1;
+            activeBlock = null;
         }
 
         // Public functions
         this.start = function () {
-            createActiveBlock();
+            if (activeBlock) {
+                grid.inactivatePositions(activeBlockPositions);
+                destroyActiveBlock();
+            }
+
+            failed = false;
+            buildActiveBlock();
         }
 
         this.pause = function () {
-            clearInterval(activeBlockId);
+            paused = !paused;
+
+            if (activeBlockId > 0) {
+                clearInterval(activeBlockId);
+                activeBlockId = -1;
+            } else if (activeBlock) {
+                self.transition.down();
+                activeBlockId = setInterval(self.transition.down, interval);
+            } else {
+                buildActiveBlock();
+            }
         }
 
         this.stop = function () {
-            disposeActiveBlock();
+            destroyActiveBlock();
             grid.inactivateAllPositions();
-            executeBlockChangeHandlers([]);
+            executeScoreChangedHandlers(0, 0, 0);
+            executeBlockChangedHandlers([]);
         }
 
-        this.addScoreChangeHandler = function (handler) {
-            handler && scoreChangeHandlerSet.add(handler);
+        this.addScoreChangedHandler = function (handler) {
+            handler && scoreChangedHandlerSet.add(handler);
         }
 
-        this.addBlockChangeHandler = function (handler) {
-            handler && blockChangeHandlerSet.add(handler);
+        this.addBlockChangedHandler = function (handler) {
+            handler && blcokChangedHandlerSet.add(handler);
         }
 
-        this.transform = {
+        this.transition = {
             down: function () {
-                if (activeBlock && !grid.checkReachBottom(activeBlock.positions)) {
-                    let oldPositions = [];
-                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
-                    activeBlock.transform.down();
-                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
-                } else {
-                    reachBottomHandler();
+                if (paused) { self.pause(); }
+
+                if (activeBlock && !reachedBottom) {
+                    activeBlock.transition.down();
                 }
             },
             left: function () {
-                if (activeBlock && !grid.checkReachLeft(activeBlock.positions)) {
-                    let oldPositions = [];
-                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
-                    activeBlock.transform.left();
-                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                if (paused) { self.pause(); }
+
+                if (activeBlock && !reachedLeft) {
+                    activeBlock.transition.left();
                 }
             },
             right: function () {
-                if (activeBlock && !grid.checkReachRight(activeBlock.positions)) {
-                    let oldPositions = [];
-                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
-                    activeBlock.transform.right();
-                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
+                if (paused) { self.pause(); }
+
+                if (activeBlock && !reachedRight) {
+                    activeBlock.transition.right();
                 }
             },
             rotate: function () {
-                let reachBottom = false;
-                if (activeBlock && !(reachBottom = grid.checkReachLeft(activeBlock.positions))
-                    && !grid.checkReachRight(activeBlock.positions)
-                    && !grid.checkReachBottom(activeBlock.positions)) {
-                    let oldPositions = [];
-                    activeBlock.positions.map(p => oldPositions.push({ x: p.x, y: p.y }));
-                    activeBlock.transform.rotate();
-                    grid.inactivatePositions(oldPositions).activatePositions(activeBlock.positions);
-                } else if (!activeBlock || reachBottom) {
-                    createActiveBlock();
+                if (paused) { self.pause(); }
+
+                if (activeBlock && grid.checkPositionsWithinGrid(activeBlockPositions) && !reachedBottom) {
+                    activeBlock.transition.rotate();
                 }
             },
             space: function () {
+                if (paused) { self.pause(); }
+
                 let curActiveBlockId = activeBlockId;
                 while (curActiveBlockId == activeBlockId) {
-                    self.transform.down();
+                    self.transition.down();
                 }
             }
         }
     }
 
-    var singletonEngine = new Engine();
+    let singletonEngine = new Engine();
     Reflect.preventExtensions(singletonEngine);
 
     return singletonEngine;

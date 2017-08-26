@@ -9,16 +9,17 @@ require([
 ], function (tetris, engine, action, announce, actionEnum, comm) {
 
     // Register events
-    action.addActionHandler(actionEnum.TRANSFORM_DOWN, engine.transform.down);
-    action.addActionHandler(actionEnum.TRANSFORM_LEFT, engine.transform.left);
-    action.addActionHandler(actionEnum.TRANSFORM_RIGHT, engine.transform.right);
-    action.addActionHandler(actionEnum.TRANSFORM_ROTATE, engine.transform.rotate);
+    action.addActionHandler(actionEnum.TRANSITION_DOWN, engine.transition.down);
+    action.addActionHandler(actionEnum.TRANSITION_LEFT, engine.transition.left);
+    action.addActionHandler(actionEnum.TRANSITION_RIGHT, engine.transition.right);
+    action.addActionHandler(actionEnum.TRANSITION_ROTATE, engine.transition.rotate);
+    action.addActionHandler(actionEnum.TRANSITION_SPACE, engine.transition.space);
     action.addActionHandler(actionEnum.ACTION_START, engine.start);
     action.addActionHandler(actionEnum.ACTION_PAUSE, engine.pause);
     action.addActionHandler(actionEnum.ACTION_STOP, engine.stop);
 
-    engine.addScoreChangeHandler(announce.handleScoreChange);
-    engine.addBlockChangeHandler(announce.handleBlockChange);
+    engine.addScoreChangedHandler(announce.handleScoreChange);
+    engine.addBlockChangedHandler(announce.handleBlockChange);
 
     // Start the engine
     engine.start();

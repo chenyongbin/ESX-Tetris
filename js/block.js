@@ -1,19 +1,24 @@
-define(function () {
+define(["../js/common.js"], function (comm) {
     'use strict';
 
-    function Block(positionArray) {
+    function Block(blockStates) {
         if (!(this instanceof Block)) {
-            return new Block(positionArray);
+            return new Block(blockStates);
         }
 
-        if (!positionArray || !(positionArray instanceof Array) || positionArray.length == 0) {
-            throw new Error("The positions is invalid or null.");
+        if (!blockStates || !(blockStates instanceof Array) || blockStates.length == 0) {
+            throw new Error("The blcok states were invalid or null.");
         }
 
         // Private variables
-        let self = this;
-        let positions = [];
-        let positionsChangedHandlerSet = new Set();
+        let self = this,
+            positions = [],
+            positionsChangedHandlerSet = new Set();
+
+        let curBlockStates = [],
+            curStateIndex = 0,
+            offsetX = 0,
+            offsetY = 0;
 
         // Private methods
         let executePositionsChangedHandler = function () {
@@ -22,27 +27,38 @@ define(function () {
             }
         }
 
+        let resetPositions = function () {
+            positions = [];
+            curBlockStates[curStateIndex].forEach(p => {
+                positions.push({
+                    x: p.x + offsetX,
+                    y: p.y + offsetY
+                });
+            });
+            executePositionsChangedHandler();
+        }
+
         // Public properties
         this.transition = {
             down: function () {
-                positions.map(point => point.y += 1);
-                executePositionsChangedHandler();
+                offsetY++;
+                resetPositions();
             },
             left: function () {
-                positions.map(point => point.x -= 1);
-                executePositionsChangedHandler();
+                offsetX--;
+                resetPositions();
             },
             right: function () {
-                positions.map(point => point.x += 1);
-                executePositionsChangedHandler();
+                offsetX++;
+                resetPositions();
             },
             rotate: function () {
-                positions.map(p => {
-                    let x = p.x, y = p.y;
-                    p.y = x;
-                    p.x = y;
-                });
-                executePositionsChangedHandler();
+                if (curStateIndex == (curBlockStates.length - 1)) {
+                    curStateIndex = 0;
+                } else {
+                    curStateIndex++;
+                }
+                resetPositions();
             }
         }
 
@@ -57,11 +73,14 @@ define(function () {
             return copyPositions;
         }
 
-        this.initializeStartPositions = function (newPositions) {
-            positions = newPositions;
+        this.adjustPositions = function (x, y) {
+            offsetX = x;
+            offsetY = y;
+            resetPositions();
         }
 
-        positionArray.forEach(p => positions.push({ x: p.x, y: p.y }));
+        blockStates.forEach(p => curBlockStates.push(p));
+        resetPositions();
     }
 
     return Block;

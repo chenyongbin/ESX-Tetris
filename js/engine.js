@@ -70,7 +70,6 @@ define([
                 throw new Error("The new block was invalid.");
             }
 
-            let newPositions = [];
             let maxX = 0, maxY = 0;
             let sortedPositions1 = blockPositions.sort((p1, p2) => p2.x - p1.x),
                 sortedPositions2 = blockPositions.sort((p1, p2) => p2.y - p1.y);
@@ -83,14 +82,8 @@ define([
             }
 
             let offsetX = Math.floor((grid.getGridDesc().colCount - maxX - 1) / 2);
-            blockPositions.forEach(p => {
-                newPositions.push({
-                    x: p.x + offsetX,
-                    y: p.y - maxY - 1
-                });
-            });
 
-            return newPositions;
+            return [offsetX, -(maxY + 1)];
         }
 
         let activeBlockPositionsChangedHandler = function (newPositions) {
@@ -131,8 +124,9 @@ define([
             }
 
             activeBlock = nextActiveBlock;
-            activeBlockPositions = getStartPositions(activeBlock.getPositions());
-            activeBlock.initializeStartPositions(activeBlockPositions);
+            let positionsOffset = getStartPositions(activeBlock.getPositions());
+            activeBlock.adjustPositions(positionsOffset[0], positionsOffset[1]);
+            activeBlockPositions = activeBlock.getPositions();
             activeBlock.addPositionsChangedHandler(activeBlockPositionsChangedHandler);
 
             nextActiveBlock = builder.getBlock();
@@ -225,9 +219,11 @@ define([
             space: function () {
                 if (paused) { self.pause(); }
 
-                let curActiveBlockId = activeBlockId;
-                while (curActiveBlockId == activeBlockId) {
-                    self.transition.down();
+                if (activeBlockId > 0) {
+                    let curActiveBlockId = activeBlockId;
+                    while (curActiveBlockId == activeBlockId) {
+                        activeBlock.transition.down();
+                    }
                 }
             }
         }

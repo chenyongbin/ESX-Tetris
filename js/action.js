@@ -50,7 +50,7 @@ define([
                     case "actionRight": executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
                     case "actionSpace": executeActionHandler(actionEnum.TRANSITION_SPACE); break;
                     case "actionDown": executeActionHandler(actionEnum.TRANSITION_DOWN); break;
-                    default: throw new Error(`Unregistered keypress event with id=${e.target.id}.`); break;
+                    default: console.log(`Unregistered keypress event with id=${e.target.id}.`); break;
                 }
             });
 
@@ -62,9 +62,8 @@ define([
                     case 38: executeActionHandler(actionEnum.TRANSITION_ROTATE); break;
                     case 39: executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
                     case 40: executeActionHandler(actionEnum.TRANSITION_DOWN); break;
-                    default: throw new Error(`Unregistered keypress event with keyCode=${e.keyCode}`);
+                    default: console.log(`Unregistered keypress event with keyCode=${e.keyCode}`);
                 }
-                e.preventDefault();
             });
         }
 

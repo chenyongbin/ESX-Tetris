@@ -19,7 +19,7 @@ define([], function () {
      */
     let convertPositionsToString = function (positions) {
         if (positions && positions.length) {
-            positions.map(p => `(${p.x},${p.y})`).join("");
+            return positions.map(p => `(${p.x},${p.y})`).join("");
         }
 
         return "";

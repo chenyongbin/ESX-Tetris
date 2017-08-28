@@ -1,8 +1,8 @@
 define([
-    '../js/var/tetris.js',
-    "../js/common.js",
-    "../js/blockBuilder.js",
-    "../js/grid.js"
+    'js/var/tetris.js',
+    "js/common.js",
+    "js/blockBuilder.js",
+    "js/grid.js"
 ], function (tetris, comm, builder, grid) {
     'use strict';
 
@@ -135,7 +135,7 @@ define([
             if (reachedBottom = grid.checkReachBottom(activeBlockPositions)) {
                 destroyActiveBlock();
                 failed = true;
-                console.log("You failed.");
+                alert("You failed.");
             } else {
                 activeBlockId = setInterval(self.transition.down, interval);
             }

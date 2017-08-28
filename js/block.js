@@ -1,4 +1,4 @@
-define(["../js/common.js"], function (comm) {
+define(["js/common.js"], function (comm) {
     'use strict';
 
     function Block(blockStates) {

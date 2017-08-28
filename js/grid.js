@@ -9,11 +9,11 @@
  */
 
 define([
-    "../js/var/gridDOM.js",
-    "../js/var/gridConfig.js",
-    "../js/var/tetris.js",
-    "../js/common.js",
-    "../js/lib/jquery.js"
+    "js/var/gridDOM.js",
+    "js/var/gridConfig.js",
+    "js/var/tetris.js",
+    "js/common.js",
+    "js/lib/jquery.js"
 ], function (gridDOM, gridConfig, tetris, comm) {
     'use strict';
 

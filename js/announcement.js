@@ -1,7 +1,7 @@
 define([
-    "../js/var/announcementDOM.js",
-    "../js/common.js",
-    '../js/lib/jquery.js'
+    "js/var/announcementDOM.js",
+    "js/common.js",
+    'js/lib/jquery.js'
 ], function (announceDOM, comm) {
     'use strict';
 

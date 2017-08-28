@@ -1,11 +1,11 @@
 require([
-    "../js/var/tetris.js",
-    "../js/engine.js",
-    "../js/action.js",
-    "../js/announcement.js",
-    "../js/var/actionEnumeration.js",
-    "../js/common.js",
-    "../js/lib/jquery.js"
+    "js/var/tetris.js",
+    "js/engine.js",
+    "js/action.js",
+    "js/announcement.js",
+    "js/var/actionEnumeration.js",
+    "js/common.js",
+    "js/lib/jquery.js"
 ], function (tetris, engine, action, announce, actionEnum, comm) {
 
     // Register events

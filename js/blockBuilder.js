@@ -1,5 +1,5 @@
 define([
-    '../js/block.js'
+    'js/block.js'
 ], function (blockConstructor) {
     'use strict';
 

@@ -1,8 +1,8 @@
 define([
-    "../js/var/actionDOM.js",
-    "../js/var/actionEnumeration.js",
-    "../js/common.js",
-    "../js/lib/jquery.js"
+    "js/var/actionDOM.js",
+    "js/var/actionEnumeration.js",
+    "js/common.js",
+    "js/lib/jquery.js"
 ], function (actionDOM, actionEnum, comm) {
     'use strict';
 

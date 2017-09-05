@@ -1,0 +1,52 @@
+{
+  "name": "ESX-Tetris",
+  "version": "1.0.0",
+  "description": "H5版俄罗斯方块",
+  "main": "js/bootstrap.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenyongbin/ESX-Tetris"
+  },
+  "keywords": [
+    "es2015",
+    "tetris",
+    "h5"
+  ],
+  "author": "chenyongbin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chenyongbin/ESX-Tetris/issues"
+  },
+  "homepage": "https://github.com/chenyongbin/ESX-Tetris#readme",
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^14.4.0",
+    "browserify-shim": "^3.8.14",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-uglify": "^3.0.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "browser": {
+    "jquery": "./lib/jquery.js"
+  },
+  "browserify-shim": {
+    "jquery": "$"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim",
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  }
+}

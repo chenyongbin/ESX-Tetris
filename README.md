@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+# ES-X版俄罗斯方块
 
-You can use the [editor on GitHub](https://github.com/chenyongbin/H5-Tetris/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+> 本地编译操作
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+    // 安装依赖文件
+    npm install
+    // 编译并打包文件
+    gulp build
 
-### Markdown
+> 目录介绍
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+    src
+    |--- var
+         |--- globalDOM,js 游戏机DOM对象
+         |--- actionDOM.js 操作面板DOM对象
+         |--- announcementDOM.js 公告面板DOM对象
+         |--- gridDOM.js 网格DOM对象
+         |--- actionEnumeration.js 操作枚举类型
+         |--- gridConfig.js 网格配置项
+         |--- tetris.js 全局数据
+    |--- action.js 操作模块
+    |--- announcement.js 公告模块
+    |--- grid.js 网格模块
+    |--- engine.js 引擎模块
+    |--- block.js 方块类
+    |--- blockBuilder.js 方块生成器
+    |--- bootstrap.js 引导程序
+    |--- common.js 通用方法类
+    |--- blockBuilder.js 方块生成器
 
-```markdown
-Syntax highlighted code block
+> 浏览器支持
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/chenyongbin/H5-Tetris/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+    Chrome 60+, Edge 40+, IE9+

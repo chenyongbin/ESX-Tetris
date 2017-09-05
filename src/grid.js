@@ -1,8 +1,7 @@
 import "babel-polyfill";
 import "../lib/jquery";
-import gridDOM from "./var/gridDOM";
-import { rowCount, colCount } from "./var/gridConfig";
-import tetris from "./var/tetris";
+import { gridDOM } from "./var/doms";
+import { gridConfig } from "./var/constants";
 
 function Grid() {
     if (!(this instanceof Grid)) {
@@ -19,10 +18,10 @@ function Grid() {
 
     // Private methods
     let init = function () {
-        for (let r = 0; r < rowCount; r++) {
+        for (let r = 0; r < gridConfig.rowCount; r++) {
             let rData = [];
             let rHtml = ["<div class='g-row'>"];
-            for (let c = 0; c < colCount; c++) {
+            for (let c = 0; c < gridConfig.colCount; c++) {
                 rData.push({ active: false });
                 rHtml.push("<span class='g-col'></span>");
             }
@@ -255,8 +254,8 @@ function Grid() {
 
     this.getGridDesc = function () {
         return {
-            colCount: colCount,
-            rowCount: rowCount
+            colCount: gridConfig.colCount,
+            rowCount: gridConfig.rowCount
         };
     }
 

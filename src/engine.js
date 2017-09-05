@@ -1,6 +1,5 @@
 import "babel-polyfill";
-import tetris from "./var/tetris";
-import * as comm from "./common";
+import { getFibValue } from "./util";
 import * as builder from "./blockBuilder";
 import grid from "./grid";
 
@@ -11,7 +10,9 @@ function Engine() {
 
     // Private variables
     let self = this,
-        interval = 1000;
+        interval = 1000,
+        lastScore = 0,
+        totalScore = 0;
 
     let activeBlock = null,
         activeBlockId = -1,
@@ -40,12 +41,12 @@ function Engine() {
             } else {
                 lastR = r;
                 calcCount = 1;
-                score += comm.getFibonacciValue(calcCount) * 10;
+                score += getFibValue(calcCount) * 10;
             }
         });
 
         if (calcCount > 0) {
-            score += comm.getFibonacciValue(calcCount) * 10;
+            score += getFibValue(calcCount) * 10;
         }
 
         return score;
@@ -98,14 +99,14 @@ function Engine() {
             destroyActiveBlock();
             let activeRows = grid.getActiveRows();
             if (activeRows && activeRows.length) {
-                tetris.lastScore = calcScore(activeRows);
-                tetris.totalScore += tetris.lastScore;
+                lastScore = calcScore(activeRows);
+                totalScore += lastScore;
 
                 grid.highlightRows(activeRows);
                 setTimeout(() => {
                     grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
                     buildActiveBlock();
-                    executeScoreChangedHandlers(tetris.lastScore, tetris.totalScore, activeRows.length);
+                    executeScoreChangedHandlers(lastScore, totalScore, activeRows.length);
                 }, 300);
             } else {
                 buildActiveBlock();

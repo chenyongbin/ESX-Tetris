@@ -7,7 +7,6 @@ var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
 
 gulp.task('build', function () {
-    // 在一个基础的 task 中创建一个 browserify 实例
     var b = browserify({
         entries: './src/bootstrap.js',
         debug: true

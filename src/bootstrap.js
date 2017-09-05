@@ -1,9 +1,8 @@
 import "babel-polyfill";
-import tetris from "./var/tetris";
+import { actionEnum } from "./var/constants";
 import engine from "./engine";
 import action from "./action";
 import announce from "./announcement";
-import * as actionEnum from "./var/actionEnumeration";
 
 // Register events
 action.addActionHandler(actionEnum.TRANSITION_DOWN, engine.transition.down);

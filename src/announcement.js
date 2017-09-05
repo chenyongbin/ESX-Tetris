@@ -1,7 +1,7 @@
 import "babel-polyfill";
 import "../lib/jquery";
-import announceDOM from "./var/announcementDOM";
-import * as comm from "./common";
+import { announcementDOM } from "./var/doms";
+import { cvtCoordinates2Str } from "./util";
 
 function Announcement() {
     if (!(this instanceof Announcement)) {
@@ -15,7 +15,7 @@ function Announcement() {
 
     // Private methods
     const init = function () {
-        announceDOM.html(`
+        announcementDOM.html(`
                 <h4>得分</h4>
                 <p class="announce-score">0</p>
                 <h4>总分</h4>
@@ -36,21 +36,21 @@ function Announcement() {
             grid.push(cols.join(""));
             grid.push("</div>");
         }
-        announceDOM.find(".announce-grid").html(grid.join(""));
+        announcementDOM.find(".announce-grid").html(grid.join(""));
     }
 
     const activatePositions = function (positions) {
         let offsetX = 0, offsetY = 0;
 
         for (let y = 0; y < gridRowCount; y++) {
-            announceDOM.find(".g-row:eq(" + (y + offsetY) + ")>.g-col").removeClass("active");
+            announcementDOM.find(".g-row:eq(" + (y + offsetY) + ")>.g-col").removeClass("active");
         }
 
         if (positions && positions.length) {
 
             let sortX = positions.sort((a, b) => b.x - a.x);
             if (sortX[0].x >= gridColCount) {
-                throw new Error(`The positions[${comm.convertPositionsToString(positions)}] of next block was invalid.`);
+                throw new Error(`The positions[${cvtCoordinates2Str(positions)}] of next block was invalid.`);
             } else {
                 offsetX = sortX[0].x >= 1 ? Math.floor((gridColCount - sortX[0].x) / 2)
                     : Math.floor((gridColCount - 1) / 2);
@@ -58,14 +58,14 @@ function Announcement() {
 
             let sortY = positions.sort((a, b) => { b.y - b.x });
             if (sortY[0].y >= gridRowCount) {
-                throw new Error(`The positions[${comm.convertPositionsToString(positions)}] of next block was invalid.`);
+                throw new Error(`The positions[${cvtCoordinates2Str(positions)}] of next block was invalid.`);
             } else {
                 offsetY = sortY[0].Y >= 1 ? Math.floor((gridRowCount - sortX[0].Y) / 2)
                     : Math.floor((gridRowCount - 1) / 2);
             }
 
             positions.map(p =>
-                announceDOM.find(".g-row:eq(" + (p.y + offsetY) + ")>.g-col:eq(" + (p.x + offsetX) + ")").addClass("active"));
+                announcementDOM.find(".g-row:eq(" + (p.y + offsetY) + ")>.g-col:eq(" + (p.x + offsetX) + ")").addClass("active"));
         }
     }
 

@@ -1,7 +1,7 @@
 import "babel-polyfill";
 import "../lib/jquery";
-import actionDOM from "./var/actionDOM";
-import * as actionEnum from "./var/actionEnumeration";
+import { actionDOM } from "./var/doms";
+import { actionEnum } from "./var/constants";
 
 function Action() {
     if (!(this instanceof Action)) {

@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import * as comm from "./common"
 
 function Block(blockStates) {
     if (!(this instanceof Block)) {

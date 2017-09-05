@@ -16,15 +16,15 @@ const getFibonacciValue = function (n) {
 
 /* 将坐标数组转换为字符串     
  */
-const convertPositionsToString = function (positions) {
-    if (positions && positions.length) {
-        return positions.map(p => `(${p.x},${p.y})`).join("");
+const convertCoordinatesToString = function (coordinates) {
+    if (coordinates && coordinates.length) {
+        return coordinates.map(c => `(${c.x},${c.y})`).join("");
     }
 
     return "";
 }
 
 export {
-    getFibonacciValue,
-    convertPositionsToString
+    getFibonacciValue as getFibValue,
+    convertCoordinatesToString as cvtCoordinates2Str
 }

@@ -1,8 +1,8 @@
 {
   "name": "ESX-Tetris",
   "version": "1.0.0",
-  "description": "H5版俄罗斯方块",
-  "main": "js/bootstrap.js",
+  "description": "ES-X版俄罗斯方块",
+  "main": "./src/bootstrap.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chenyongbin/ESX-Tetris"

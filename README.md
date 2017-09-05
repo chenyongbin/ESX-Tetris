@@ -26,7 +26,6 @@
     |--- blockBuilder.js 方块生成器
     |--- bootstrap.js 引导程序
     |--- common.js 通用方法类
-    |--- blockBuilder.js 方块生成器
 
 > 浏览器支持
 

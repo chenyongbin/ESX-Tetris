@@ -1,5 +1,3 @@
-import "../../lib/jquery";
-
 const gameBoxDOM = $("#gameBox"),
     actionDOM = $("div.game-box-actionbar"),
     announcementDOM = $("div.announcement"),

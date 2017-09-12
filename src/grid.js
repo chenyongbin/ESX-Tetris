@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import "../lib/jquery";
 import { gridDOM } from "./var/doms";
 import { gridConfig } from "./var/constants";
 

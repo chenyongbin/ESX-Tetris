@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import "../lib/jquery";
 import { actionDOM } from "./var/doms";
 import { actionEnum } from "./var/constants";
 

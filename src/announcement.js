@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import "../lib/jquery";
 import { announcementDOM } from "./var/doms";
 import { cvtCoordinates2Str } from "./util";
 

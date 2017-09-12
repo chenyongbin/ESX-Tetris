@@ -13,7 +13,7 @@
 
     src
     |--- var
-         |--- doms,js 各模块DOM对象
+         |--- doms.js 各模块DOM对象
          |--- constants.js 各配置常量
     |--- action.js 操作模块
     |--- announcement.js 公告模块
@@ -26,4 +26,4 @@
 
 > 浏览器支持
 
-    Chrome 60+, Edge 40+, IE9+, Safrari
+    Chrome 60+, Edge 40+, IE9+, Safari

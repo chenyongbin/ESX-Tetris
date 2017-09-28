@@ -1,3 +1,7 @@
+html{
+    font-size: 10px;
+}
+
 .ml10{
     margin-left: 10px;
 }
@@ -129,7 +133,7 @@
     width: 30px;
     height: 30px;
     border-radius: 15px;
-    font-size: 8px;
+    font-size: 0.8rem;
     color:white;
     background-color: #2765D0; 
     user-select: none;

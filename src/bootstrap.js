@@ -5,17 +5,17 @@ import action from "./action";
 import announce from "./announcement";
 
 // Register events
-action.addActionHandler(actionEnum.TRANSITION_DOWN, engine.transition.down);
-action.addActionHandler(actionEnum.TRANSITION_LEFT, engine.transition.left);
-action.addActionHandler(actionEnum.TRANSITION_RIGHT, engine.transition.right);
-action.addActionHandler(actionEnum.TRANSITION_ROTATE, engine.transition.rotate);
-action.addActionHandler(actionEnum.TRANSITION_SPACE, engine.transition.space);
-action.addActionHandler(actionEnum.ACTION_START, engine.start);
-action.addActionHandler(actionEnum.ACTION_PAUSE, engine.pause);
-action.addActionHandler(actionEnum.ACTION_STOP, engine.stop);
+action.addTransitionDownHandler(engine.transition_down);
+action.addTransitionLeftHandler(engine.transition_left);
+action.addTransitionRightHandler(engine.transition_right);
+action.addTransitionRotateHandler(engine.transition_rotate);
+action.addTransitionSpaceHandler(engine.transition_space);
+action.addActionStartHandler(engine.start);
+action.addActionPauseHandler(engine.pause);
+action.addActionStopHandler(engine.stop);
 
-engine.addScoreChangedHandler(announce.handleScoreChange);
-engine.addBlockChangedHandler(announce.handleBlockChange);
+engine.addScoreChangedHandler(announce.scoreChangedHandler);
+engine.addBlockChangedHandler(announce.blockChangedHandler);
 
 // Start the engine
 engine.start();

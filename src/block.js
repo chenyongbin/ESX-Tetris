@@ -1,85 +1,88 @@
 import "babel-polyfill";
 
-function Block(blockStates) {
-    if (!(this instanceof Block)) {
-        return new Block(blockStates);
+const _states = Symbol("states"),
+    _stateIndex = Symbol("stateIndex"),
+    _offsetX = Symbol("offsetX"),
+    _offsetY = Symbol("offsetY"),
+    _coordinates = Symbol["coordinates"],
+    _coordinatesChangedHandlerSet = Symbol("coordinatesChangedHandlerSetF"),
+    _resetCoordinates = Symbol("resetCoordinates"),
+    _onCoordinatesChanged = Symbol("onCoordinatesChanged");
+
+class Block {
+    constructor(...states) {
+        /**
+         * TODO: how to validate the states structure.
+         */
+
+        this[_states] = states;
+        this[_stateIndex] = 0;
+        this[_offsetX] = 0;
+        this[_offsetY] = 0;
+        this[_coordinates] = this[_states][this[_stateIndex]];
+        this[_coordinatesChangedHandlerSet] = new Set();
+
+        this[_resetCoordinates] = this[_resetCoordinates].bind(this);
+        this[_onCoordinatesChanged] = this[_onCoordinatesChanged].bind(this);
+        this.transition_left = this.transition_left.bind(this);
+        this.transition_right = this.transition_right.bind(this);
+        this.transition_down = this.transition_down.bind(this);
+        this.transition_rotate = this.transition_rotate.bind(this);
+        this.getCoordinates = this.getCoordinates.bind(this);
+        this.adjustCoordinates = this.adjustCoordinates.bind(this);
+        this.addCoordinatesChangedHandler = this.addCoordinatesChangedHandler.bind(this);
     }
 
-    if (!blockStates || !(blockStates instanceof Array) || blockStates.length == 0) {
-        throw new Error("The blcok states were invalid or null.");
-    }
-
-    // Private variables
-    let self = this,
-        positions = [],
-        positionsChangedHandlerSet = new Set();
-
-    let curBlockStates = [],
-        curStateIndex = 0,
-        offsetX = 0,
-        offsetY = 0;
-
-    // Private methods
-    let executePositionsChangedHandler = function () {
-        for (let handler of positionsChangedHandlerSet) {
-            handler && handler(self.getPositions());
-        }
-    }
-
-    let resetPositions = function () {
-        positions = [];
-        curBlockStates[curStateIndex].forEach(p => {
-            positions.push({
-                x: p.x + offsetX,
-                y: p.y + offsetY
-            });
+    [_resetCoordinates]() {
+        this[_coordinates] = this[_states][this[_stateIndex]].map(co => {
+            return {
+                x: co.x + this[_offsetX],
+                y: co.y + this[_offsetY],
+            };
         });
-        executePositionsChangedHandler();
+        this[_onCoordinatesChanged]([...this[_coordinates]]);
     }
 
-    // Public properties
-    this.transition = {
-        down: function () {
-            offsetY++;
-            resetPositions();
-        },
-        left: function () {
-            offsetX--;
-            resetPositions();
-        },
-        right: function () {
-            offsetX++;
-            resetPositions();
-        },
-        rotate: function () {
-            if (curStateIndex == (curBlockStates.length - 1)) {
-                curStateIndex = 0;
-            } else {
-                curStateIndex++;
-            }
-            resetPositions();
+    [_onCoordinatesChanged]() {
+        for (let handler of this[_coordinatesChangedHandlerSet]) {
+            handler && handler([...this[_coordinates]]);
         }
     }
-
-    // Public functions
-    this.addPositionsChangedHandler = function (handler) {
-        handler && positionsChangedHandlerSet.add(handler);
+    
+    transition_left() {
+        this[_offsetX]--;
+        this[_resetCoordinates]();
     }
 
-    this.getPositions = function () {
-        let copyPositions = [];
-        positions.map(p => copyPositions.push({ x: p.x, y: p.y }));
-        return copyPositions;
+    transition_right() {
+        this[_offsetX]++;
+        this[_resetCoordinates]();
     }
 
-    this.adjustPositions = function (x, y) {
-        offsetX = x;
-        offsetY = y;
-        resetPositions();
+    transition_down() {
+        this[_offsetY]++;
+        this[_resetCoordinates]();
     }
 
-    blockStates.forEach(p => curBlockStates.push(p));
-    resetPositions();
+    transition_rotate() {
+        this[_stateIndex] = this[_stateIndex] >= (this[_states].length - 1)
+            ? 0 : this[_stateIndex] + 1;
+        this[_resetCoordinates]();
+    }
+
+    getCoordinates() {
+        return [...this[_coordinates]];
+    }
+
+    adjustCoordinates(offsetX, offsetY) {
+        this[_offsetX] = offsetX;
+        this[_offsetY] = offsetY;
+        this[_resetCoordinates]();
+    }
+
+    addCoordinatesChangedHandler(handler) {
+        this[_coordinatesChangedHandlerSet].add(handler);
+    }
 }
 
 export default Block;

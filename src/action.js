@@ -1,51 +1,68 @@
 import "babel-polyfill";
 import { actionDOM } from "./var/doms";
-import { actionEnum } from "./var/constants";
 
-function Action() {
-    if (!(this instanceof Action)) {
-        return new Action();
+const _transitionDown = "transition_down",
+    _transitionLetf = "transition_left",
+    _transitionRight = "transition_right",
+    _transitionRotate = "transition_rotate",
+    _transitionSpace = "transition_space",
+    _actionStart = "action_start",
+    _actionPause = "action_pause",
+    _actionStop = "action_stop";
+
+let _actionMap = new Map();
+
+const _addActionHandler = function (actionName, handler) {
+    if (_actionMap.has(actionName)) {
+        _actionMap.get(actionName).add(handler);
+    } else {
+        _actionMap.set(actionName, new Set([handler]));
     }
+}
 
-    // Private variables
-    let self = this;
-    let actionHandlerMap = new Map();
+const _onAction = function (actionName) {
+    if (_actionMap.has(actionName)) {
+        for (let handler of _actionMap.get(actionName)) {
+            handler && handler();
+        }
+    }
+}
 
-    // Private methods
-    const init = function () {
+class Action {
+    constructor() {
         // Render html
         actionDOM.html(`
-                <div class='action-left'>
-                    <div class='btn btn-start' id="actionStart">START</div>
-                    <div class='btn btn-pause ml10' id="actionPause">PAUSE</div>
-                    <div class='btn btn-stop ml10' id="actionStop">STOP</div>
-                </div>
-                <div class='action-right'>
-                    <div class='action-row'>                                        
-                    <div class='btn' id="actionRotate">ROTATE</div>
-                    </div>
-                    <div class='action-row'>                    
-                        <div class='btn' id="actionLeft">LEFT</div>
-                        <div class='btn btn-rectangle ml20 mr20'id="actionSpace">SPACE</div>
-                        <div class='btn' id="actionRight">RIGHT</div>
-                    </div>
-                    <div class='action-row'>
-                        <div class='btn' id="actionDown">DOWN</div>
-                    </div>
-                </div>                
-            `);
+        <div class='action-left'>
+            <div class='btn btn-start' id="actionStart">START</div>
+            <div class='btn btn-pause ml10' id="actionPause">PAUSE</div>
+            <div class='btn btn-stop ml10' id="actionStop">STOP</div>
+        </div>
+        <div class='action-right'>
+            <div class='action-row'>                                        
+            <div class='btn' id="actionRotate">ROTATE</div>
+            </div>
+            <div class='action-row'>                    
+                <div class='btn' id="actionLeft">LEFT</div>
+                <div class='btn btn-rectangle ml20 mr20'id="actionSpace">SPACE</div>
+                <div class='btn' id="actionRight">RIGHT</div>
+            </div>
+            <div class='action-row'>
+                <div class='btn' id="actionDown">DOWN</div>
+            </div>
+        </div>                
+    `);
 
         // Register button events
         $("#actionStart,#actionPause,#actionStop,#actionLeft,#actionRotate,#actionRight,#actionSpace,#actionDown").on("click", function (e) {
             switch (e.target.id) {
-                case "actionStart": executeActionHandler(actionEnum.ACTION_START); break;
-                case "actionPause": executeActionHandler(actionEnum.ACTION_PAUSE); break;
-                case "actionStop": executeActionHandler(actionEnum.ACTION_STOP); break;
-                case "actionLeft": executeActionHandler(actionEnum.TRANSITION_LEFT); break;
-                case "actionRotate": executeActionHandler(actionEnum.TRANSITION_ROTATE); break;
-                case "actionRight": executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
-                case "actionSpace": executeActionHandler(actionEnum.TRANSITION_SPACE); break;
-                case "actionDown": executeActionHandler(actionEnum.TRANSITION_DOWN); break;
+                case "actionStart": _onAction(_actionStart); break;
+                case "actionPause": _onAction(_actionPause); break;
+                case "actionStop": _onAction(_actionStop); break;
+                case "actionLeft": _onAction(_transitionLetf); break;
+                case "actionRotate": _onAction(_transitionRotate); break;
+                case "actionRight": _onAction(_transitionRight); break;
+                case "actionSpace": _onAction(_transitionSpace); break;
+                case "actionDown": _onAction(_transitionDown); break;
                 default: console.log(`Unregistered keypress event with id=${e.target.id}.`); break;
             }
         });
@@ -53,39 +70,48 @@ function Action() {
         // Register keyboard event
         $(document).on("keydown", function (e) {
             switch (e.keyCode) {
-                case 32: executeActionHandler(actionEnum.TRANSITION_SPACE); break;
-                case 37: executeActionHandler(actionEnum.TRANSITION_LEFT); break;
-                case 38: executeActionHandler(actionEnum.TRANSITION_ROTATE); break;
-                case 39: executeActionHandler(actionEnum.TRANSITION_RIGHT); break;
-                case 40: executeActionHandler(actionEnum.TRANSITION_DOWN); break;
+                case 32: _onAction(_transitionSpace); break;
+                case 37: _onAction(_transitionLetf); break;
+                case 38: _onAction(_transitionRotate); break;
+                case 39: _onAction(_transitionRight); break;
+                case 40: _onAction(_transitionDown); break;
                 default: console.log(`Unregistered keypress event with keyCode=${e.keyCode}`);
             }
         });
     }
 
-    const executeActionHandler = function (actionName, ...args) {
-        if (actionHandlerMap.has(actionName)) {
-            let handlers = actionHandlerMap.get(actionName);
-            if (handlers && handlers.size) {
-                for (let handler of handlers) {
-                    handler && handler(...args);
-                }
-            }
-        }
+    addTransitionDownHandler(handler) {
+        _addActionHandler(_transitionDown, handler);
     }
 
-    // Public functions
-    this.addActionHandler = function (actionName, handler) {
-        if (actionHandlerMap.has(actionName)) {
-            actionHandlerMap.get(actionName).add(handler);
-        } else {
-            actionHandlerMap.set(actionName, new Set([handler]));
-        }
+    addTransitionLeftHandler(handler) {
+        _addActionHandler(_transitionLetf, handler);
     }
 
-    init();
+    addTransitionRightHandler(handler) {
+        _addActionHandler(_transitionRight, handler);
+    }
+
+    addTransitionRotateHandler(handler) {
+        _addActionHandler(_transitionRotate, handler);
+    }
+
+    addTransitionSpaceHandler(handler) {
+        _addActionHandler(_transitionSpace, handler);
+    }
+
+    addActionStartHandler(handler) {
+        _addActionHandler(_actionStart, handler);
+    }
+
+    addActionPauseHandler(handler) {
+        _addActionHandler(_actionPause, handler);
+    }
+
+    addActionStopHandler(handler) {
+        _addActionHandler(_actionStop, handler);
+    }
 }
 
 const singletonAction = new Action();
-
 export default singletonAction;

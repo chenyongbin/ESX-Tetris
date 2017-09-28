@@ -24,7 +24,27 @@ const convertCoordinatesToString = function (coordinates) {
     return "";
 }
 
+/**
+ * 判断curClass是否继承自targetClass
+ * @param {*} curClass 
+ * @param {*} targetClass 
+ */
+const isInheritedFrom = function (curClass, targetClass) {
+    return Reflect.getPrototypeOf(curClass) === targetClass;
+}
+
+/**
+ * 判断curInstance是否是targetClass的实例
+ * @param {*} curInstance 
+ * @param {*} targetClass 
+ */
+const isInstanceOf = function (curInstance, targetClass) {
+    return isInheritedFrom(curInstance.constructor, targetClass);
+}
+
 export {
     getFibonacciValue as getFibValue,
-    convertCoordinatesToString as cvtCoordinates2Str
+    convertCoordinatesToString as cvtCoordinates2Str,
+    isInheritedFrom,
+    isInstanceOf,
 }

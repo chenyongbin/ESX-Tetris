@@ -1,230 +1,223 @@
 import "babel-polyfill";
-import { getFibValue } from "./util";
-import * as builder from "./blockBuilder";
+import * as util from "./util";
+import { getBlock } from "./blockBuilder";
+import { gridConfig } from "./var/constants";
 import grid from "./grid";
 
-function Engine() {
-    if (!(this instanceof Engine)) {
-        return new Engine();
+let _transitionInterval = 1000,
+    _highlightTimeout = 300,
+    _lastScore = 0,
+    _totalScore = 0,
+
+    _failed = false,
+    _paused = false,
+
+    _activeBlock = null,
+    _activeBlockId = -1,
+    _activeBlockCoordinates = [],
+    _nextActiveBlock = null,
+
+    _scoreChangedHandlerSet = new Set(),
+    _blockChangedHandlerSet = new Set();
+
+const _onScoreChanged = function (lastScore, totalScore, clearRowCount) {
+    for (let handler of _scoreChangedHandlerSet) {
+        handler && handler(lastScore, totalScore, clearRowCount);
     }
-
-    // Private variables
-    let self = this,
-        interval = 1000,
-        lastScore = 0,
-        totalScore = 0;
-
-    let activeBlock = null,
-        activeBlockId = -1,
-        activeBlockPositions = [],
-        nextActiveBlock = null;
-
-    let reachedLeft = false,
-        reachedRight = false,
-        reachedBottom = false,
-        paused = false,
-        failed = false;
-
-    let scoreChangedHandlerSet = new Set(),
-        blcokChangedHandlerSet = new Set();
-
-    // Private methods
-    let calcScore = function (rows) {
-        let score = 0;
-        let lastR = -1, calcCount = 1;
-
-        rows.sort((a, b) => a - b).forEach(r => {
-            if (lastR < 0) {
-                lastR = r;
-            } else if (r - lastR == 1) {
-                calcCount++;
-            } else {
-                lastR = r;
-                calcCount = 1;
-                score += getFibValue(calcCount) * 10;
-            }
-        });
-
-        if (calcCount > 0) {
-            score += getFibValue(calcCount) * 10;
-        }
-
-        return score;
+}
+const _onBlockChanged = function (coordinates) {
+    for (let handler of _blockChangedHandlerSet) {
+        handler && handler(coordinates);
     }
+}
 
-    let executeScoreChangedHandlers = function (score, totalScore, clearRowCount) {
-        for (let handler of scoreChangedHandlerSet) {
-            handler && handler(score, totalScore, clearRowCount);
-        }
-    }
+const _calculateScore = function (rows) {
+    let score = 0;
+    let lastR = -1, calcCount = 1;
 
-    let executeBlockChangedHandlers = function (positions) {
-        for (let handler of blcokChangedHandlerSet) {
-            handler && handler(positions);
-        }
-    }
-
-    let getStartPositions = function (blockPositions) {
-        if (!blockPositions || blockPositions.length == 0) {
-            throw new Error("The new block was invalid.");
-        }
-
-        let maxX = 0, maxY = 0;
-        let sortedPositions1 = blockPositions.sort((p1, p2) => p2.x - p1.x),
-            sortedPositions2 = blockPositions.sort((p1, p2) => p2.y - p1.y);
-
-        if (sortedPositions1 && sortedPositions1.length) {
-            maxX = sortedPositions1[0].x;
-        }
-        if (sortedPositions2 && sortedPositions2.length) {
-            maxY = sortedPositions2[0].y;
-        }
-
-        let offsetX = Math.floor((grid.getGridDesc().colCount - maxX - 1) / 2);
-
-        return [offsetX, -(maxY + 1)];
-    }
-
-    let activeBlockPositionsChangedHandler = function (newPositions) {
-        if (!newPositions || newPositions.length == 0) {
-            throw new Error("The newPositions was invalid.");
-        }
-
-        reachedLeft = false;
-        reachedRight = false;
-        grid.inactivatePositions(activeBlockPositions).activatePositions(newPositions);
-        activeBlockPositions = newPositions;
-
-        if (reachedBottom = grid.checkReachBottom(newPositions)) {
-            destroyActiveBlock();
-            let activeRows = grid.getActiveRows();
-            if (activeRows && activeRows.length) {
-                lastScore = calcScore(activeRows);
-                totalScore += lastScore;
-
-                grid.highlightRows(activeRows);
-                setTimeout(() => {
-                    grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
-                    buildActiveBlock();
-                    executeScoreChangedHandlers(lastScore, totalScore, activeRows.length);
-                }, 300);
-            } else {
-                buildActiveBlock();
-            }
+    rows.sort((a, b) => a - b).forEach(r => {
+        if (lastR < 0) {
+            lastR = r;
+        } else if (r - lastR == 1) {
+            calcCount++;
         } else {
-            reachedLeft = grid.checkReachLeft(newPositions);
-            reachedRight = grid.checkReachRight(newPositions);
+            lastR = r;
+            calcCount = 1;
+            score += util.getFibValue(calcCount) * 10;
         }
+    });
+
+    if (calcCount > 0) {
+        score += util.getFibValue(calcCount) * 10;
     }
 
-    let buildActiveBlock = function () {
-        if (!nextActiveBlock) {
-            nextActiveBlock = builder.getBlock();
-        }
+    return score;
+}
 
-        activeBlock = nextActiveBlock;
-        let positionsOffset = getStartPositions(activeBlock.getPositions());
-        activeBlock.adjustPositions(positionsOffset[0], positionsOffset[1]);
-        activeBlockPositions = activeBlock.getPositions();
-        activeBlock.addPositionsChangedHandler(activeBlockPositionsChangedHandler);
+const _getStartOffsets = function (coordinates) {
+    let maxX = 0, maxY = 0;
+    let sortedCoordinates1 = coordinates.sort((co1, co2) => co2.x - co1.x),
+        sortedCoordinates2 = coordinates.sort((co1, co2) => co2.y - co1.y);
 
-        nextActiveBlock = builder.getBlock();
-        executeBlockChangedHandlers(nextActiveBlock.getPositions());
+    if (sortedCoordinates1 && sortedCoordinates1.length) {
+        maxX = sortedCoordinates1[0].x;
+    }
+    if (sortedCoordinates2 && sortedCoordinates2.length) {
+        maxY = sortedCoordinates2[0].y;
+    }
 
-        if (reachedBottom = grid.checkReachBottom(activeBlockPositions)) {
-            destroyActiveBlock();
-            failed = true;
-            alert("You failed.");
+    let offsetX = Math.floor((gridConfig.colCount - maxX - 1) / 2);
+
+    return [offsetX, -(maxY + 1)];
+}
+
+const _blockCoordinatesChangedHandler = function (newCoordinates) {
+    grid.inactivateCoordinates(_activeBlockCoordinates).activateCoordinates(newCoordinates);
+    _activeBlockCoordinates = [...newCoordinates];
+
+    if (grid.checkReachBottom(_activeBlockCoordinates)) {
+        _destroyActiveBlock();
+        let activeRows = grid.getActiveRows();
+        if (activeRows && activeRows.length) {
+            _lastScore = _calculateScore(activeRows);
+            _totalScore += _lastScore;
+
+            grid.highlightRows(activeRows);
+            setTimeout(() => {
+                grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
+                _buildActiveBlock();
+                _onScoreChanged(_lastScore, _totalScore, activeRows.length);
+            }, _highlightTimeout);
         } else {
-            activeBlockId = setInterval(self.transition.down, interval);
+            _buildActiveBlock();
         }
     }
+}
 
-    let destroyActiveBlock = function () {
-        clearInterval(activeBlockId);
-        activeBlockId = -1;
-        activeBlock = null;
+const _buildActiveBlock = function () {
+    if (!_nextActiveBlock) {
+        _nextActiveBlock = getBlock();
     }
 
-    // Public functions
-    this.start = function () {
-        if (activeBlock) {
-            grid.inactivatePositions(activeBlockPositions);
-            destroyActiveBlock();
+    _activeBlock = _nextActiveBlock;
+    let [offsetX, offsetY] = _getStartOffsets(_activeBlock.getCoordinates());
+    _activeBlock.adjustCoordinates(offsetX, offsetY);
+    _activeBlockCoordinates = _activeBlock.getCoordinates();
+    _activeBlock.addCoordinatesChangedHandler(_blockCoordinatesChangedHandler);
+
+    _nextActiveBlock = getBlock();
+    _onBlockChanged(_nextActiveBlock.getCoordinates());
+
+    if (grid.checkReachBottom(_activeBlockCoordinates)) {
+        _destroyActiveBlock();
+        _failed = true;
+        console.log("You failed.");
+    } else {
+        _activeBlockId = setInterval(() => {
+            _activeBlock.transition_down();
+        }, _transitionInterval);
+    }
+}
+
+const _destroyActiveBlock = function () {
+    clearInterval(_activeBlockId);
+    _activeBlockId = -1;
+    _activeBlock = null;
+}
+
+const _cleanup = function () {
+    _destroyActiveBlock();
+    grid.inactivateAll();
+    _onScoreChanged(0, 0, 0);
+    _onBlockChanged([]);
+}
+
+class Engine {
+    start() {
+        if (_failed) {
+            _cleanup();
         }
 
-        failed = false;
-        buildActiveBlock();
+        if (_activeBlock) {
+            grid.inactivateCoordinates(_activeBlockCoordinates);
+            _destroyActiveBlock();
+        }
+
+        _failed = false;
+        _buildActiveBlock();
     }
 
-    this.pause = function () {
-        paused = !paused;
+    pause() {
+        if (_failed) return false;
 
-        if (activeBlockId > 0) {
-            clearInterval(activeBlockId);
-            activeBlockId = -1;
-        } else if (activeBlock) {
-            self.transition.down();
-            activeBlockId = setInterval(self.transition.down, interval);
+        _paused = !_paused;
+
+        if (_activeBlockId > 0) {
+            clearInterval(_activeBlockId);
+            _activeBlockId = -1;
+        } else if (_activeBlock) {
+            _activeBlock.transition_down();
+            _activeBlockId = setInterval(() => {
+                _activeBlock.transition_down();
+            }, _transitionInterval);
         } else {
-            buildActiveBlock();
+            _buildActiveBlock();
         }
     }
 
-    this.stop = function () {
-        destroyActiveBlock();
-        grid.inactivateAllPositions();
-        executeScoreChangedHandlers(0, 0, 0);
-        executeBlockChangedHandlers([]);
+    stop() {
+        _cleanup();
     }
 
-    this.addScoreChangedHandler = function (handler) {
-        handler && scoreChangedHandlerSet.add(handler);
-    }
+    transition_left() {
+        if (_paused) { this.pause(); }
 
-    this.addBlockChangedHandler = function (handler) {
-        handler && blcokChangedHandlerSet.add(handler);
-    }
-
-    this.transition = {
-        down: function () {
-            if (paused) { self.pause(); }
-
-            if (activeBlock && !reachedBottom) {
-                activeBlock.transition.down();
-            }
-        },
-        left: function () {
-            if (paused) { self.pause(); }
-
-            if (activeBlock && !reachedLeft) {
-                activeBlock.transition.left();
-            }
-        },
-        right: function () {
-            if (paused) { self.pause(); }
-
-            if (activeBlock && !reachedRight) {
-                activeBlock.transition.right();
-            }
-        },
-        rotate: function () {
-            if (paused) { self.pause(); }
-
-            if (activeBlock && grid.checkPositionsWithinGrid(activeBlockPositions) && !reachedBottom) {
-                activeBlock.transition.rotate();
-            }
-        },
-        space: function () {
-            if (paused) { self.pause(); }
-
-            if (activeBlockId > 0) {
-                let curActiveBlockId = activeBlockId;
-                while (curActiveBlockId == activeBlockId) {
-                    activeBlock.transition.down();
-                }
-            }
+        if (!grid.checkReachLeft(_activeBlockCoordinates)) {
+            _activeBlock.transition_left();
         }
+    }
+
+    transition_right() {
+        if (_paused) { this.pause(); }
+
+        if (!grid.checkReachRight(_activeBlockCoordinates)) {
+            _activeBlock.transition_right();
+        }
+    }
+
+    transition_down() {
+        if (_paused) { this.pause(); }
+
+        if (!grid.checkReachBottom(_activeBlockCoordinates)) {
+            _activeBlock.transition_down();
+        }
+    }
+
+    transition_rotate() {
+        if (_paused) { this.pause(); }
+
+        if (!grid.checkReachBottom(_activeBlockCoordinates)
+            && !grid.checkReachLeft(_activeBlockCoordinates)
+            && !grid.checkReachRight(_activeBlockCoordinates)) {
+            _activeBlock.transition_rotate();
+        }
+    }
+
+    transition_space() {
+        if (_paused) { this.pause(); }
+
+        let curActiveBlockId = _activeBlockId;
+        while (curActiveBlockId == _activeBlockId) {
+            _activeBlock.transition_down();
+        }
+    }
+
+    addScoreChangedHandler(handler) {
+        _scoreChangedHandlerSet.add(handler);
+    }
+
+    addBlockChangedHandler(handler) {
+        _blockChangedHandlerSet.add(handler);
     }
 }
 

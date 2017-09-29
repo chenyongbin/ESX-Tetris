@@ -2,24 +2,10 @@ import "babel-polyfill";
 import { gridConfig } from "./var/constants";
 import { gridDOM } from "./var/doms";
 
-const _activeClassName = "active",
-    _highlightClassName = "highlight",
-    _gridBoundary = {
-        x1: 0, x2: 0,
-        y1: 0, y2: 0,
-    };
-
-const _getElements = function (y, x) {
-    if (y >= 0 && x >= 0) {
-        return gridDOM.find(`.g-y${y}-x${x}`);
-    }
-
-    if (y >= 0) {
-        return gridDOM.find(`.g-y${y} .g-col`);
-    }
-
-    return [];
-}
+const _gridBoundary = {
+    x1: 0, x2: 0,
+    y1: 0, y2: 0,
+};
 
 const _getActiveElements = function (y) {
     if (y >= 0) {
@@ -29,17 +15,37 @@ const _getActiveElements = function (y) {
     return [];
 }
 
-const _addClass = function (className, y, x = -1) {
-    let elments = _getElements(y, x);
-    if (elments.length) {
-        elments.addClass(className);
+const _setActiveState = function (coordinate = { x: -1, y: -1 }, active = false) {
+    let { x, y } = coordinate, elements = [];
+
+    if (y >= 0 && x >= 0) {
+        elements = gridDOM.find(`.g-y${y}-x${x}`);
+    } else if (y >= 0) {
+        elements = gridDOM.find(`.g-y${y} .g-col`);
+    }
+
+    if (elements && elements.length > 0) {
+        if (active) {
+            elements.addClass("active");
+        } else {
+            elements.removeClass("active");
+        }
     }
 }
 
-const _removeClass = function (classname, y, x = -1) {
-    let elments = _getElements(y, x);
-    if (elments.length) {
-        elments.removeClass(classname);
+const _setHighlightedState = function (y = -1, highlighted = false) {
+    let elements = [];
+
+    if (y >= 0) {
+        elements = gridDOM.find(`.g-y${y} .g-col`);
+    }
+
+    if (elements && elements.length > 0) {
+        if (highlighted) {
+            elements.addClass("highlight");
+        } else {
+            elements.removeClass("highlight");
+        }
     }
 }
 
@@ -66,38 +72,10 @@ class Grid {
 
         _gridBoundary.y2 = rowCount - 1;
         _gridBoundary.x2 = colCount - 1;
-    }
 
-    activateCoordinates(coordinates) {
-        coordinates.forEach(co => _addClass(_activeClassName, co.y, co.x));
-        return this;
-    }
-
-    inactivateCoordinates(coordinates) {
-        coordinates.forEach(co => _removeClass(_activeClassName, co.y, co.x));
-        return this;
-    }
-
-    inactivateRows(rows) {
-        rows.forEach(y => _removeClass(_activeClassName, y));
-        return this;
-    }
-
-    inactivateAll() {
-        for (let y = _gridBoundary.y1; y <= _gridBoundary.y2; y++) {
-            _removeClass(_activeClassName, y);
-        }
-        return this;
-    }
-
-    highlightRows(rows) {
-        rows.forEach(y => _addClass(_highlightClassName, y));
-        return this;
-    }
-
-    unhighlightRows(rows) {
-        rows.forEach(y => _removeClass(_highlightClassName, y));
-        return this;
+        this.updateCoordinates = this.updateCoordinates.bind(this);
+        this.refresh = this.refresh.bind(this);
+        this.clear = this.clear.bind(this);
     }
 
     repaint() {
@@ -112,15 +90,16 @@ class Grid {
                 }
             } else if (maxInactiveY >= 0) {
                 elements.map((index, el) => {
-                    _addClass(_activeClassName, maxInactiveY, $(el).data("x"));
-                    _removeClass(_activeClassName, y, $(el).data("x"));
+                    let x = $(el).data("x");
+                    _setActiveState({ y: maxInactiveY, x }, true);
+                    _setActiveState({ y, x });
                 });
                 maxInactiveY--;
             }
             y--;
         }
 
-        return this;
+        // return this;
     }
 
     getActiveRows() {
@@ -173,6 +152,46 @@ class Grid {
             }
         }
         return false;
+    }
+
+    updateCoordinates(newCoordinates, oldCoordinates) {
+        let reachedBottom = false, reachedLeft = false, reachedRight = false, activeRows = [];
+
+        if (oldCoordinates && oldCoordinates.length) {
+            oldCoordinates.forEach(co => _setActiveState(co));
+        }
+        if (newCoordinates && newCoordinates.length) {
+            newCoordinates.forEach(co => _setActiveState(co, true));
+
+            reachedBottom = this.checkReachBottom(newCoordinates);
+            if (reachedBottom) {
+                activeRows = this.getActiveRows();
+            } else {
+                reachedLeft = this.checkReachLeft(newCoordinates);
+                reachedRight = this.checkReachRight(newCoordinates);
+            }
+        }
+
+        if (activeRows && activeRows.length > 0) {
+            activeRows.forEach(y => _setHighlightedState(y, true));
+        }
+
+        return { reachedBottom, reachedLeft, reachedRight, activeRows, };
+    }
+
+    refresh() {
+        let activeRows = this.getActiveRows();
+        activeRows.forEach(y => {
+            _setHighlightedState(y);
+            _setActiveState({ y });
+        });
+        this.repaint();
+    }
+
+    clear() {
+        for (let y = _gridBoundary.y1; y <= _gridBoundary.y2; y++) {
+            _setActiveState({ y });
+        }
     }
 }
 

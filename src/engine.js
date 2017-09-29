@@ -1,13 +1,12 @@
 import "babel-polyfill";
 import * as util from "./util";
 import { getBlock } from "./blockBuilder";
-import { gridConfig } from "./var/constants";
-import grid from "./grid";
 
 let _transitionInterval = 1000,
     _highlightTimeout = 300,
     _lastScore = 0,
     _totalScore = 0,
+    _clearRowCount = 0,
 
     _failed = false,
     _paused = false,
@@ -18,7 +17,19 @@ let _transitionInterval = 1000,
     _nextActiveBlock = null,
 
     _scoreChangedHandlerSet = new Set(),
-    _blockChangedHandlerSet = new Set();
+    _blockChangedHandlerSet = new Set(),
+
+    _updateCoordinatesFunc = null,
+    _refreshViewFunc = null,
+    _clearViewFunc = null;
+
+let _viewConfig = { width: 0, height: 0 };
+let _updateResult = {
+    reachedBottom: false,
+    reachedLeft: false,
+    reachedRight: false,
+    activeRows: []
+};
 
 const _onScoreChanged = function (lastScore, totalScore, clearRowCount) {
     for (let handler of _scoreChangedHandlerSet) {
@@ -66,27 +77,26 @@ const _getStartOffsets = function (coordinates) {
         maxY = sortedCoordinates2[0].y;
     }
 
-    let offsetX = Math.floor((gridConfig.colCount - maxX - 1) / 2);
+    let offsetX = Math.floor((_viewConfig.width - maxX - 1) / 2);
 
     return [offsetX, -(maxY + 1)];
 }
 
 const _blockCoordinatesChangedHandler = function (newCoordinates) {
-    grid.inactivateCoordinates(_activeBlockCoordinates).activateCoordinates(newCoordinates);
+    _updateResult = _updateCoordinatesFunc(newCoordinates, _activeBlockCoordinates);
     _activeBlockCoordinates = [...newCoordinates];
 
-    if (grid.checkReachBottom(_activeBlockCoordinates)) {
+    if (_updateResult.reachedBottom) {
         _destroyActiveBlock();
-        let activeRows = grid.getActiveRows();
-        if (activeRows && activeRows.length) {
-            _lastScore = _calculateScore(activeRows);
+        if (_updateResult.activeRows && _updateResult.activeRows.length) {
+            _clearRowCount = _updateResult.activeRows.length;
+            _lastScore = _calculateScore(_updateResult.activeRows);
             _totalScore += _lastScore;
 
-            grid.highlightRows(activeRows);
             setTimeout(() => {
-                grid.unhighlightRows(activeRows).inactivateRows(activeRows).repaint();
+                _refreshViewFunc();
                 _buildActiveBlock();
-                _onScoreChanged(_lastScore, _totalScore, activeRows.length);
+                _onScoreChanged(_lastScore, _totalScore, _clearRowCount);
             }, _highlightTimeout);
         } else {
             _buildActiveBlock();
@@ -108,7 +118,8 @@ const _buildActiveBlock = function () {
     _nextActiveBlock = getBlock();
     _onBlockChanged(_nextActiveBlock.getCoordinates());
 
-    if (grid.checkReachBottom(_activeBlockCoordinates)) {
+    _updateResult = _updateCoordinatesFunc(_activeBlockCoordinates, null);
+    if (_updateResult.reachedBottom) {
         _destroyActiveBlock();
         _failed = true;
         console.log("You failed.");
@@ -127,7 +138,7 @@ const _destroyActiveBlock = function () {
 
 const _cleanup = function () {
     _destroyActiveBlock();
-    grid.inactivateAll();
+    _clearViewFunc();
     _onScoreChanged(0, 0, 0);
     _onBlockChanged([]);
 }
@@ -139,7 +150,7 @@ class Engine {
         }
 
         if (_activeBlock) {
-            grid.inactivateCoordinates(_activeBlockCoordinates);
+            _updateResult = _updateCoordinatesFunc(null, _activeBlockCoordinates);
             _destroyActiveBlock();
         }
 
@@ -172,7 +183,7 @@ class Engine {
     transition_left() {
         if (_paused) { this.pause(); }
 
-        if (!grid.checkReachLeft(_activeBlockCoordinates)) {
+        if (!_updateResult.reachedLeft) {
             _activeBlock.transition_left();
         }
     }
@@ -180,7 +191,7 @@ class Engine {
     transition_right() {
         if (_paused) { this.pause(); }
 
-        if (!grid.checkReachRight(_activeBlockCoordinates)) {
+        if (!_updateResult.reachedRight) {
             _activeBlock.transition_right();
         }
     }
@@ -188,7 +199,7 @@ class Engine {
     transition_down() {
         if (_paused) { this.pause(); }
 
-        if (!grid.checkReachBottom(_activeBlockCoordinates)) {
+        if (!_updateResult.reachedBottom) {
             _activeBlock.transition_down();
         }
     }
@@ -196,9 +207,7 @@ class Engine {
     transition_rotate() {
         if (_paused) { this.pause(); }
 
-        if (!grid.checkReachBottom(_activeBlockCoordinates)
-            && !grid.checkReachLeft(_activeBlockCoordinates)
-            && !grid.checkReachRight(_activeBlockCoordinates)) {
+        if (!_updateResult.reachedBottom && !_updateResult.reachedLeft && !_updateResult.reachedRight) {
             _activeBlock.transition_rotate();
         }
     }
@@ -218,6 +227,22 @@ class Engine {
 
     addBlockChangedHandler(handler) {
         _blockChangedHandlerSet.add(handler);
+    }
+
+    addUpdateCoordinatesFunc(updateCoordinatesFunc) {
+        _updateCoordinatesFunc = updateCoordinatesFunc;
+    }
+
+    addRefreshViewFunc(refreshViewFunc) {
+        _refreshViewFunc = refreshViewFunc;
+    }
+
+    addClearViewFunc(clearViewFunc) {
+        _clearViewFunc = clearViewFunc;
+    }
+
+    addViewConfig(width, height) {
+        _viewConfig = { width: width, height: height };
     }
 }
 

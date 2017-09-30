@@ -2,247 +2,260 @@ import "babel-polyfill";
 import * as util from "./util";
 import { getBlock } from "./blockBuilder";
 
-let _transitionInterval = 1000,
-    _highlightTimeout = 300,
-    _lastScore = 0,
-    _totalScore = 0,
-    _clearRowCount = 0,
+class Engine {
 
-    _failed = false,
-    _paused = false,
+    constructor() {
+        // properties related to global configuration
+        this.transitionInterval = 1000;
+        this.highlightTimeout = 300;
+        this.failed = false;
+        this.paused = false;
 
-    _activeBlock = null,
-    _activeBlockId = -1,
-    _activeBlockCoordinates = [],
-    _nextActiveBlock = null,
+        // properties related to block
+        this.activeBlock = null;
+        this.activeBlockId = -1;
+        this.activeBlockCoordinates = [];
+        this.nextActiveBlock = null;
 
-    _scoreChangedHandlerSet = new Set(),
-    _blockChangedHandlerSet = new Set(),
+        // properties related to announcement panel
+        this.currentScore = 0;
+        this.totalScore = 0;
+        this.clearRowCount = 0;
+        this.scoreChangedHandlerSet = new Set();
+        this.blockChangedHandlerSet = new Set();
 
-    _updateCoordinatesFunc = null,
-    _refreshViewFunc = null,
-    _clearViewFunc = null;
+        // properties related to view
+        this.updateBlockStateFunc = null;
+        this.refreshViewFunc = null;
+        this.clearViewFunc = null;
+        this.viewConfig = { width: 0, height: 0 };
+        this.updateBlockStateResult = { reachedBottom: false, reachedLeft: false, reachedRight: false, activeRows: [] };
 
-let _viewConfig = { width: 0, height: 0 };
-let _updateResult = {
-    reachedBottom: false,
-    reachedLeft: false,
-    reachedRight: false,
-    activeRows: []
-};
-
-const _onScoreChanged = function (lastScore, totalScore, clearRowCount) {
-    for (let handler of _scoreChangedHandlerSet) {
-        handler && handler(lastScore, totalScore, clearRowCount);
+        // set exposed function's action scope of this
+        this.blockCoordinatesChangedHandler = this.blockCoordinatesChangedHandler.bind(this);
+        this.transition_down = this.transition_down.bind(this);
+        this.transition_left = this.transition_left.bind(this);
+        this.transition_right = this.transition_right.bind(this);
+        this.transition_rotate = this.transition_rotate.bind(this);
+        this.transition_space = this.transition_space.bind(this);
+        this.start = this.start.bind(this);
+        this.pause = this.pause.bind(this);
+        this.stop = this.stop.bind(this);
     }
-}
-const _onBlockChanged = function (coordinates) {
-    for (let handler of _blockChangedHandlerSet) {
-        handler && handler(coordinates);
+
+    onScoreChanged(currentScore, totalScore, clearRowCount) {
+        for (let handler of this.scoreChangedHandlerSet) {
+            handler && handler(currentScore, totalScore, clearRowCount);
+        }
     }
-}
 
-const _calculateScore = function (rows) {
-    let score = 0;
-    let lastR = -1, calcCount = 1;
+    onBlockChanged(coordinates) {
+        for (let handler of this.blockChangedHandlerSet) {
+            handler && handler(coordinates);
+        }
+    }
 
-    rows.sort((a, b) => a - b).forEach(r => {
-        if (lastR < 0) {
-            lastR = r;
-        } else if (r - lastR == 1) {
-            calcCount++;
-        } else {
-            lastR = r;
-            calcCount = 1;
+    calculateScore(rows) {
+        let score = 0;
+        let lastR = -1, calcCount = 1;
+
+        rows.sort((a, b) => a - b).forEach(r => {
+            if (lastR < 0) {
+                lastR = r;
+            } else if (r - lastR == 1) {
+                calcCount++;
+            } else {
+                lastR = r;
+                calcCount = 1;
+                score += util.getFibValue(calcCount) * 10;
+            }
+        });
+
+        if (calcCount > 0) {
             score += util.getFibValue(calcCount) * 10;
         }
-    });
 
-    if (calcCount > 0) {
-        score += util.getFibValue(calcCount) * 10;
+        return score;
     }
 
-    return score;
-}
+    getStartOffsets(coordinates) {
+        let maxX = 0, maxY = 0;
+        let sortedCoordinates1 = coordinates.sort((co1, co2) => co2.x - co1.x),
+            sortedCoordinates2 = coordinates.sort((co1, co2) => co2.y - co1.y);
 
-const _getStartOffsets = function (coordinates) {
-    let maxX = 0, maxY = 0;
-    let sortedCoordinates1 = coordinates.sort((co1, co2) => co2.x - co1.x),
-        sortedCoordinates2 = coordinates.sort((co1, co2) => co2.y - co1.y);
+        if (sortedCoordinates1 && sortedCoordinates1.length) {
+            maxX = sortedCoordinates1[0].x;
+        }
+        if (sortedCoordinates2 && sortedCoordinates2.length) {
+            maxY = sortedCoordinates2[0].y;
+        }
 
-    if (sortedCoordinates1 && sortedCoordinates1.length) {
-        maxX = sortedCoordinates1[0].x;
+        let offsetX = Math.floor((this.viewConfig.width - maxX - 1) / 2);
+
+        return [offsetX, -(maxY + 1)];
     }
-    if (sortedCoordinates2 && sortedCoordinates2.length) {
-        maxY = sortedCoordinates2[0].y;
+
+    blockCoordinatesChangedHandler(newCoordinates) {
+        this.updateBlockStateResult = this.updateBlockStateFunc(newCoordinates, this.activeBlockCoordinates);
+        this.activeBlockCoordinates = [...newCoordinates];
+
+        if (this.updateBlockStateResult.reachedBottom) {
+            this.destroyActiveBlock();
+            if (this.updateBlockStateResult.activeRows && this.updateBlockStateResult.activeRows.length) {
+                this.clearRowCount = this.updateBlockStateResult.activeRows.length;
+                this.currentScore = this.calculateScore(this.updateBlockStateResult.activeRows);
+                this.totalScore += this.currentScore;
+
+                setTimeout(() => {
+                    this.refreshViewFunc();
+                    this.buildActiveBlock();
+                    this.onScoreChanged(this.currentScore, this.totalScore, this.clearRowCount);
+                }, this.highlightTimeout);
+            } else {
+                this.buildActiveBlock();
+            }
+        }
     }
 
-    let offsetX = Math.floor((_viewConfig.width - maxX - 1) / 2);
+    buildActiveBlock() {
+        if (!this.nextActiveBlock) {
+            this.nextActiveBlock = getBlock();
+        }
 
-    return [offsetX, -(maxY + 1)];
-}
+        this.activeBlock = this.nextActiveBlock;
+        let [offsetX, offsetY] = this.getStartOffsets(this.activeBlock.getCoordinates());
+        this.activeBlock.adjustCoordinates(offsetX, offsetY);
+        this.activeBlockCoordinates = this.activeBlock.getCoordinates();
+        this.activeBlock.addCoordinatesChangedHandler(this.blockCoordinatesChangedHandler);
 
-const _blockCoordinatesChangedHandler = function (newCoordinates) {
-    _updateResult = _updateCoordinatesFunc(newCoordinates, _activeBlockCoordinates);
-    _activeBlockCoordinates = [...newCoordinates];
+        this.nextActiveBlock = getBlock();
+        this.onBlockChanged(this.nextActiveBlock.getCoordinates());
 
-    if (_updateResult.reachedBottom) {
-        _destroyActiveBlock();
-        if (_updateResult.activeRows && _updateResult.activeRows.length) {
-            _clearRowCount = _updateResult.activeRows.length;
-            _lastScore = _calculateScore(_updateResult.activeRows);
-            _totalScore += _lastScore;
-
-            setTimeout(() => {
-                _refreshViewFunc();
-                _buildActiveBlock();
-                _onScoreChanged(_lastScore, _totalScore, _clearRowCount);
-            }, _highlightTimeout);
+        this.updateBlockStateResult = this.updateBlockStateFunc(this.activeBlockCoordinates, null);
+        if (this.updateBlockStateResult.reachedBottom) {
+            this.destroyActiveBlock();
+            this.failed = true;
+            console.log("You failed.");
         } else {
-            _buildActiveBlock();
+            this.activeBlockId = setInterval(() => {
+                this.activeBlock.transition_down();
+            }, this.transitionInterval);
         }
     }
-}
 
-const _buildActiveBlock = function () {
-    if (!_nextActiveBlock) {
-        _nextActiveBlock = getBlock();
+    destroyActiveBlock() {
+        clearInterval(this.activeBlockId);
+        this.activeBlockId = -1;
+        this.activeBlock = null;
     }
 
-    _activeBlock = _nextActiveBlock;
-    let [offsetX, offsetY] = _getStartOffsets(_activeBlock.getCoordinates());
-    _activeBlock.adjustCoordinates(offsetX, offsetY);
-    _activeBlockCoordinates = _activeBlock.getCoordinates();
-    _activeBlock.addCoordinatesChangedHandler(_blockCoordinatesChangedHandler);
-
-    _nextActiveBlock = getBlock();
-    _onBlockChanged(_nextActiveBlock.getCoordinates());
-
-    _updateResult = _updateCoordinatesFunc(_activeBlockCoordinates, null);
-    if (_updateResult.reachedBottom) {
-        _destroyActiveBlock();
-        _failed = true;
-        console.log("You failed.");
-    } else {
-        _activeBlockId = setInterval(() => {
-            _activeBlock.transition_down();
-        }, _transitionInterval);
+    cleanup() {
+        this.destroyActiveBlock();
+        this.clearViewFunc();
+        this.onScoreChanged(0, 0, 0);
+        this.onBlockChanged([]);
     }
-}
 
-const _destroyActiveBlock = function () {
-    clearInterval(_activeBlockId);
-    _activeBlockId = -1;
-    _activeBlock = null;
-}
-
-const _cleanup = function () {
-    _destroyActiveBlock();
-    _clearViewFunc();
-    _onScoreChanged(0, 0, 0);
-    _onBlockChanged([]);
-}
-
-class Engine {
     start() {
-        if (_failed) {
-            _cleanup();
+        if (this.failed) {
+            this.cleanup();
         }
 
-        if (_activeBlock) {
-            _updateResult = _updateCoordinatesFunc(null, _activeBlockCoordinates);
-            _destroyActiveBlock();
+        if (this.activeBlock) {
+            this.updateBlockStateResult = this.updateBlockStateFunc(null, this.activeBlockCoordinates);
+            this.destroyActiveBlock();
         }
 
-        _failed = false;
-        _buildActiveBlock();
+        this.failed = false;
+        this.buildActiveBlock();
     }
 
     pause() {
-        if (_failed) return false;
+        if (this.failed) return false;
 
-        _paused = !_paused;
+        this.paused = !this.paused;
 
-        if (_activeBlockId > 0) {
-            clearInterval(_activeBlockId);
-            _activeBlockId = -1;
-        } else if (_activeBlock) {
-            _activeBlock.transition_down();
-            _activeBlockId = setInterval(() => {
-                _activeBlock.transition_down();
-            }, _transitionInterval);
+        if (this.activeBlockId > 0) {
+            clearInterval(this.activeBlockId);
+            this.activeBlockId = -1;
+        } else if (this.activeBlock) {
+            this.activeBlock.transition_down();
+            this.activeBlockId = setInterval(() => {
+                this.activeBlock.transition_down();
+            }, this.transitionInterval);
         } else {
-            _buildActiveBlock();
+            this.buildActiveBlock();
         }
     }
 
     stop() {
-        _cleanup();
+        this.cleanup();
     }
 
     transition_left() {
-        if (_paused) { this.pause(); }
+        if (this.paused) { this.pause(); }
 
-        if (!_updateResult.reachedLeft) {
-            _activeBlock.transition_left();
+        if (!this.updateBlockStateResult.reachedLeft) {
+            this.activeBlock.transition_left();
         }
     }
 
     transition_right() {
-        if (_paused) { this.pause(); }
+        if (this.paused) { this.pause(); }
 
-        if (!_updateResult.reachedRight) {
-            _activeBlock.transition_right();
+        if (!this.updateBlockStateResult.reachedRight) {
+            this.activeBlock.transition_right();
         }
     }
 
     transition_down() {
-        if (_paused) { this.pause(); }
+        if (this.paused) { this.pause(); }
 
-        if (!_updateResult.reachedBottom) {
-            _activeBlock.transition_down();
+        if (!this.updateBlockStateResult.reachedBottom) {
+            this.activeBlock.transition_down();
         }
     }
 
     transition_rotate() {
-        if (_paused) { this.pause(); }
+        if (this.paused) { this.pause(); }
 
-        if (!_updateResult.reachedBottom && !_updateResult.reachedLeft && !_updateResult.reachedRight) {
-            _activeBlock.transition_rotate();
+        if (!this.updateBlockStateResult.reachedBottom && !this.updateBlockStateResult.reachedLeft && !this.updateBlockStateResult.reachedRight) {
+            this.activeBlock.transition_rotate();
         }
     }
 
     transition_space() {
-        if (_paused) { this.pause(); }
+        if (this.paused) { this.pause(); }
 
-        let curActiveBlockId = _activeBlockId;
-        while (curActiveBlockId == _activeBlockId) {
-            _activeBlock.transition_down();
+        let curActiveBlockId = this.activeBlockId;
+        while (curActiveBlockId == this.activeBlockId) {
+            this.activeBlock.transition_down();
         }
     }
 
     addScoreChangedHandler(handler) {
-        _scoreChangedHandlerSet.add(handler);
+        this.scoreChangedHandlerSet.add(handler);
     }
 
     addBlockChangedHandler(handler) {
-        _blockChangedHandlerSet.add(handler);
+        this.blockChangedHandlerSet.add(handler);
     }
 
-    addUpdateCoordinatesFunc(updateCoordinatesFunc) {
-        _updateCoordinatesFunc = updateCoordinatesFunc;
+    addUpdateBlockStateFunc(updateBlockStateFunc) {
+        this.updateBlockStateFunc = updateBlockStateFunc;        
     }
 
     addRefreshViewFunc(refreshViewFunc) {
-        _refreshViewFunc = refreshViewFunc;
+        this.refreshViewFunc = refreshViewFunc;        
     }
 
     addClearViewFunc(clearViewFunc) {
-        _clearViewFunc = clearViewFunc;
+        this.clearViewFunc = clearViewFunc;        
     }
 
     addViewConfig(width, height) {
-        _viewConfig = { width: width, height: height };
+        this.viewConfig.width = width;
+        this.viewConfig.height = height;
     }
 }
 

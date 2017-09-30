@@ -1,5 +1,4 @@
 import "babel-polyfill";
-import { gridConfig } from "./var/constants";
 import grid from "./grid";
 import action from "./action";
 import announce from "./announcement";
@@ -21,10 +20,10 @@ engine.addScoreChangedHandler(announce.scoreChangedHandler);
 engine.addBlockChangedHandler(announce.blockChangedHandler);
 
 // combine grid with engine
-engine.addUpdateCoordinatesFunc(grid.updateCoordinates);
+engine.addUpdateBlockStateFunc(grid.updateBlockState);
 engine.addRefreshViewFunc(grid.refresh);
 engine.addClearViewFunc(grid.clear);
-engine.addViewConfig(gridConfig.colCount, gridConfig.rowCount);
+engine.addViewConfig(grid.gridBoundary.x2, grid.gridBoundary.y2);
 
 // Start the engine
 engine.start();

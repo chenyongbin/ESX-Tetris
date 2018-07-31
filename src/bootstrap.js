@@ -5,10 +5,10 @@
  * @version 0.0.1
  */
 
-import * as grid from './grid';
-import * as engine from './engine';
-import * as gamepad from './gamepad';
-import * as notice from './notice';
+import grid from './grid';
+import engine from './engine';
+import gamepad from './gamepad';
+import notice from './notice';
 
 gamepad.addMoveHandlers({
     pauseHandler: engine.pause,

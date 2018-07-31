@@ -8,6 +8,9 @@
 import { getGamepadContainer } from './var/containers';
 let $container = null;
 
+/**
+ * 初始化
+ */
 const initialize = () => {
     $container = getGamepadContainer && getGamepadContainer();
     // 初始化手柄html，并将其绑定至container
@@ -24,7 +27,7 @@ const initialize = () => {
  * @param {function} handlerObject.moveDownHandler - 向下处理方法
  * @param {function} handlerObject.moveFallHandler - 掉落处理方法
  */
-module.addMoveHandlers = ({
+const addMoveHandlers = ({
     pauseHandler: pause,
     startoverHandler: startover,
     moveRotateHandler: moveRotate,
@@ -60,3 +63,7 @@ module.addMoveHandlers = ({
 }
 
 initialize();
+
+export default {
+    addMoveHandlers,
+}

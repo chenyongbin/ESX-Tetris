@@ -8,6 +8,9 @@
 import { getNoticeContainer } from './var/containers';
 let $container = null;
 
+/**
+ * 初始化
+ */
 const initialize = () => {
     $container = getNoticeContainer && getNoticeContainer();
     // 初始化告知HTML，并将其附加至container
@@ -19,6 +22,10 @@ const initialize = () => {
  * @param {number} lastScore - 上次得分
  * @param {object[]} nextBlock - 下个方块的初始坐标集合
  */
-module.render = (totalScore, lastScore, nextBlock) => { };
+const render = (totalScore, lastScore, nextBlock) => { };
 
 initialize();
+
+export default {
+    render,
+}

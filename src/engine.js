@@ -18,12 +18,7 @@ let activate = null, inactivate = null, renderScore = null,
  * @param {function} startOptions.inactivateHandler - 取消激活操作的处理方法
  * @param {function} startOptions.renderScoreHandler - 方块落下后更新得分的处理方法
  */
-module.initialize = ({
-    gridSize: gridSize,
-    activateHandler: activateHandler,
-    inactivateHandler: inactivateHandler,
-    renderScoreHandler: renderScoreHandler
-}) => {
+const initialize = ({ gridSize, activateHandler, inactivateHandler, renderScoreHandler, }) => {
     [gridRowCount, gridColCount] = gridSize;
     [activate, inactivate, renderScore] = [activateHandler, inactivateHandler, renderScoreHandler];
     // 初始化模块变量，注册激活、取消激活等处理方法
@@ -32,7 +27,7 @@ module.initialize = ({
 /**
  * 启动游戏
  */
-module.start = () => {
+const start = () => {
     // 初始化模块变量，随机新建一个方块
     // 创建并启动一个循环定时器，每个定时间隔，改变一次方块的位移，并刷新网格控件的展示
 }
@@ -40,36 +35,48 @@ module.start = () => {
 /**
  * 暂停/继续游戏
  */
-module.pause = () => {
+const pause = () => {
 }
 
 /**
  * 重新开始游戏
  */
-module.startover = () => {
+const startover = () => {
 }
 
 /**
  * 动作.旋转
  */
-module.moveRotate = () => { }
+const moveRotate = () => { }
 
 /**
  * 动作.向左
  */
-module.moveLeft = () => { }
+const moveLeft = () => { }
 
 /**
  * 动作.向右
  */
-module.moveRight = () => { }
+const moveRight = () => { }
 
 /**
  * 动作.向下
  */
-module.moveDown = () => { }
+const moveDown = () => { }
 
 /**
  * 动作.掉落
  */
-module.moveFall = () => { }
+const moveFall = () => { }
+
+export default {
+    initialize,
+    start,
+    pause,
+    startover,
+    moveRotate,
+    moveLeft,
+    moveRight,
+    moveDown,
+    moveFall,
+}

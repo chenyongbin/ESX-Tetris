@@ -28,36 +28,36 @@ const initialize = () => {
  * @param {function} handlerObject.moveFallHandler - 掉落处理方法
  */
 const addMoveHandlers = ({
-    pauseHandler: pause,
-    startoverHandler: startover,
-    moveRotateHandler: moveRotate,
-    moveLeftHandler: moveLeft,
-    moveRightHandler: moveRight,
-    moveDownHandler: moveDown,
-    moveFallHandler: moveFall
+    pauseHandler,
+    startoverHandler,
+    moveRotateHandler,
+    moveLeftHandler,
+    moveRightHandler,
+    moveDownHandler,
+    moveFallHandler,
 }) => {
     // 注册按钮事件
     $container.on("click", "[data-cmd]", e => {
         e.stopPropagation();
         switch ($(e.currentTarget).data('cmd')) {
-            case 'pause': pause && pause(); break;
-            case 'startover': startover && startover(); break;
-            case 'rotate': moveRotate && moveRotate(); break;
-            case 'left': moveLeft && moveLeft(); break;
-            case 'right': moveRight && moveRight(); break;
-            case 'down': moveDown && moveDown(); break;
-            case 'fall': moveFall && moveFall(); break;
+            case 'pause': pauseHandler && pauseHandler(); break;
+            case 'startover': startoverHandler && startoverHandler(); break;
+            case 'rotate': moveRotateHandler && moveRotateHandler(); break;
+            case 'left': moveLeftHandler && moveLeftHandler(); break;
+            case 'right': moveRightHandler && moveRightHandler(); break;
+            case 'down': moveDownHandler && moveDownHandler(); break;
+            case 'fall': moveFallHandler && moveFallHandler(); break;
         }
     });
 
     // 注册键盘事件
     $(document).on("keydown", function (e) {
         switch (e.keyCode) {
-            case 32: moveFall && moveFall(); break;
-            case 37: moveLeft && moveLeft(); break;
-            case 38: moveRotate && moveRotate(); break;
-            case 39: moveRight && moveRight(); break;
-            case 40: moveDown && moveDown(); break;
+            case 32: moveFallHandler && moveFallHandler(); break;
+            case 37: moveLeftHandler && moveLeftHandler(); break;
+            case 38: moveRotateHandler && moveRotateHandler(); break;
+            case 39: moveRightHandler && moveRightHandler(); break;
+            case 40: moveDownHandler && moveDownHandler(); break;
         }
     });
 }

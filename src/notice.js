@@ -18,11 +18,12 @@ const initialize = () => {
 
 /**
  * 在通知区域更新、显示总分、上次得分、下个方块
- * @param {number} totalScore - 总得分
- * @param {number} lastScore - 上次得分
- * @param {object[]} nextBlock - 下个方块的初始坐标集合
+ * @param {object} renderContent - 需要更新&显示的内容
+ * @param {number} renderContent.totalScore - 总得分
+ * @param {number} renderContent.lastScore - 上次得分
+ * @param {object[]} renderContent.nextBlock - 下个方块的初始坐标集合
  */
-const render = (totalScore, lastScore, nextBlock) => { };
+const render = ({ totalScore, lastScore, nextBlock, }) => { };
 
 initialize();
 

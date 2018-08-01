@@ -4,7 +4,7 @@
  * @author chenyongbin <chenyongbin789@163.com>
  * @version 0.0.1
  */
-
+import './css/style.css';
 import grid from './grid';
 import engine from './engine';
 import gamepad from './gamepad';

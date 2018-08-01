@@ -28,5 +28,8 @@ module.exports = {
                 use: 'babel-loader'
             }
         ]
-    }    
+    },
+    plugins: [
+        new ExtractTextWebpackPlugin('css/style.css?[chunkhash:7]')
+    ]
 }

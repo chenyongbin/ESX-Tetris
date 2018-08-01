@@ -5,10 +5,10 @@
  * @version 0.0.1
  */
 
- /**
-  * 获取网格的行数
-  * @returns {number} 行数
-  */
+/**
+ * 获取网格的行数
+ * @returns {number} 行数
+ */
 const getGridRowCount = () => {
     if (window.localStorage) {
         let rowCount = localStorage.getItem("ESX-Tetris-GridRowCount");
@@ -29,7 +29,7 @@ const getGridColCount = () => {
     return 10;
 }
 
-export default {
+export {
     getGridRowCount,
     getGridColCount,
 }

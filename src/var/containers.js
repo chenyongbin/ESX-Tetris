@@ -5,10 +5,10 @@
  * @version 0.0.1
  */
 
- /**
-  * 获取网格容器DOM
-  * @returns {jQueryObject}
-  */
+/**
+ * 获取网格容器DOM
+ * @returns {jQueryObject}
+ */
 const getGridContainer = () => {
     return $("#grid");
 }
@@ -37,7 +37,7 @@ const getSidebarContainer = () => {
     return $("#sidebar");
 }
 
-export default {
+export {
     getGridContainer,
     getGamepadContainer,
     getNoticeContainer,

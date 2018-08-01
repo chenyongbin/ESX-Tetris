@@ -37,7 +37,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/index.html',
             hash: true,
-            filename: 'index.html',
+            filename: '../index.html',
             chunks: ['main'],
             minify: {
                 collapseInlineTagWhitespace: true,

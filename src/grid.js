@@ -14,20 +14,18 @@
  (0,1)********(1,1)
  */
 
-import { getGridRowCount, getGridColCount } from './var/config';
-import { getGridContainer } from './var/containers';
+import { getGridRowCount, getGridColCount } from './config';
+import { getGridContainer } from './containers';
 
-let $container = null;
-let rowCount = 0, colCount = 0;
+let $container = getGridContainer(),
+    rowCount = getGridRowCount(),
+    colCount = getGridColCount();
 
 /**
  * 初始化
  */
 const initialize = () => {
-    $container = getGridContainer();
-    rowCount = getGridRowCount();
-    colCount = getGridColCount();
-    // 组装网格HTML，并将其绑定至container
+    // 组装网格HTML，并将其绑定至container    
 }
 
 /**

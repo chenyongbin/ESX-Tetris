@@ -5,14 +5,13 @@
  * @version 0.0.1
  */
 
-import { getNoticeContainer } from './var/containers';
-let $container = null;
+import { getNoticeContainer } from './containers';
+let $container = getNoticeContainer();
 
 /**
  * 初始化
  */
 const initialize = () => {
-    $container = getNoticeContainer && getNoticeContainer();
     // 初始化告知HTML，并将其附加至container
 }
 

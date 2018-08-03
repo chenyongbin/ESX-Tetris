@@ -5,14 +5,13 @@
  * @version 0.0.1
  */
 
-import { getGamepadContainer } from './var/containers';
-let $container = null;
+import { getGamepadContainer } from './containers';
+let $container = getGamepadContainer();
 
 /**
  * 初始化
  */
 const initialize = () => {
-    $container = getGamepadContainer && getGamepadContainer();
     // 初始化手柄html，并将其绑定至container
 }
 

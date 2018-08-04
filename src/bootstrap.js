@@ -10,14 +10,14 @@ import engine from './engine';
 import gamepad from './gamepad';
 import notice from './notice';
 
-gamepad.addMoveHandlers({
+gamepad.bindMoveHandlers({
     pauseHandler: engine.pause,
     startoverhandler: engine.start,
-    moveRotateHandler: engine.moveRotateHandler,
-    moveLeftHandler: engine.moveLeftHandler,
-    moveRightHandler: engine.moveRightHandler,
-    moveDownHandler: engine.moveDownHandler,
-    moveFallHandler: engine.moveFallHandler
+    moveRotateHandler: engine.moveRotate,
+    moveLeftHandler: engine.moveLeft,
+    moveRightHandler: engine.moveRight,
+    moveDownHandler: engine.moveDown,
+    moveFallHandler: engine.moveFall
 });
 
 engine.initialize({

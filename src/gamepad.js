@@ -12,7 +12,19 @@ let $container = getGamepadContainer();
  * 初始化
  */
 const initialize = () => {
-    // 初始化手柄html，并将其绑定至container
+    $container.html(`
+        <div class="left">
+            <div data-cmd="left">LEFT</div>
+            <div data-cmd="right">RIGHT</div>
+            <div data-cmd="rotate">ROTATE</div>
+            <div data-cmd="down">DOWN</div>
+            <div data-cmd="fall">FALL</div>
+        </div>
+        <div class="right">
+            <div data-cmd="pause">暂停</div>
+            <div data-cmd="startover">重新开始</div>
+        </div>
+    `);
 }
 
 /**
@@ -26,7 +38,7 @@ const initialize = () => {
  * @param {function} handlerObject.moveDownHandler - 向下处理方法
  * @param {function} handlerObject.moveFallHandler - 掉落处理方法
  */
-const addMoveHandlers = ({
+const bindMoveHandlers = ({
     pauseHandler,
     startoverHandler,
     moveRotateHandler,
@@ -38,7 +50,7 @@ const addMoveHandlers = ({
     // 注册按钮事件
     $container.on("click", "[data-cmd]", e => {
         e.stopPropagation();
-        switch ($(e.currentTarget).data('cmd')) {
+        switch ($(e.currentTarget).attr('data-cmd')) {
             case 'pause': pauseHandler && pauseHandler(); break;
             case 'startover': startoverHandler && startoverHandler(); break;
             case 'rotate': moveRotateHandler && moveRotateHandler(); break;
@@ -64,5 +76,5 @@ const addMoveHandlers = ({
 initialize();
 
 export default {
-    addMoveHandlers,
+    bindMoveHandlers,
 }

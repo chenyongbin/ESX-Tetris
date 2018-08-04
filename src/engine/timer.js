@@ -6,31 +6,55 @@
  */
 
 class TetrisTimer {
+    /**
+     * 
+     * @param {number}} interval - 定时器间隔时间，单位毫秒
+     * @param {function} fn - 定时器间隔执行方法
+     */
     constructor(interval, fn) {
-        this.interval = interval;
-        this.intervalFn = fn;
         this.isPaused = false;
+        this.interval = interval;
+        this.intervalFn = () => {
+            !this._isPaused && fn && fn();
+        };
+        this._timerId = -1;
     }
 
     /**
      * 启动
      */
-    start() { }
+    start() {
+        this._timerId = setInterval(this.intervalFn, this.interval);
+    }
 
     /**
      * 暂停
      */
-    pause() { }
+    pause() {
+        this._isPaused = true;
+    }
 
     /**
      * 继续
      */
-    resume() { }
+    resume() {
+        this._isPaused = false;
+    }
 
     /**
      * 停止
      */
-    stop() { }
+    stop() {
+        this._isPaused = false;
+        clearInterval(this._timerId);
+    }
+
+    /**
+     * 检查定时器是否暂停
+     */
+    isPaused() {
+        return this._isPaused;
+    }
 }
 
 export default TetrisTimer

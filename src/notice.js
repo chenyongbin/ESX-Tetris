@@ -16,16 +16,22 @@ const initialize = () => {
 }
 
 /**
- * 在通知区域更新、显示总分、上次得分、下个方块
- * @param {object} renderContent - 需要更新&显示的内容
- * @param {number} renderContent.totalScore - 总得分
- * @param {number} renderContent.lastScore - 上次得分
- * @param {object[]} renderContent.nextBlock - 下个方块的初始坐标集合
+ * 更新总得分、上次得分
+ * @param {object} score - 需要更新&显示的内容
+ * @param {number} score.totalScore - 总得分
+ * @param {number} score.lastScore - 上次得分
  */
-const render = ({ totalScore, lastScore, nextBlock, }) => { };
+const renderScore = ({ totalScore, lastScore }) => { };
+
+/**
+ * 更新下个方块形状
+ * @param {object[]} nextBlock - 下个方块的初始坐标集合
+ */
+const renderNextBlock = nextBlock => { }
 
 initialize();
 
 export default {
-    render,
+    renderScore,
+    renderNextBlock
 }

@@ -12,7 +12,7 @@ import notice from './notice';
 
 gamepad.addMoveHandlers({
     pauseHandler: engine.pause,
-    startoverhandler: engine.startover,
+    startoverhandler: engine.start,
     moveRotateHandler: engine.moveRotateHandler,
     moveLeftHandler: engine.moveLeftHandler,
     moveRightHandler: engine.moveRightHandler,
@@ -23,7 +23,9 @@ gamepad.addMoveHandlers({
 engine.initialize({
     gridSize: grid.getSize(),
     activateHandler: grid.activate,
-    inactivateHandler: grid.iniactivate,
-    renderScoreHandler: notice.render
+    inactivateHandler: grid.inactivate,
+    inactivateAllHandler: grid.inactivateAll,
+    renderScoreHandler: notice.renderScore,
+    renderNextBlockHandler: notice.renderNextBlock
 });
-engine.start();
+// engine.start();

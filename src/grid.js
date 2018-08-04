@@ -19,7 +19,8 @@ import { getGridContainer } from './containers';
 
 let $container = getGridContainer(),
     rowCount = getGridRowCount(),
-    colCount = getGridColCount();
+    colCount = getGridColCount(),
+    clearFilledRowsAnimationDuration = 300;
 
 /**
  * 初始化
@@ -48,10 +49,16 @@ const getSize = () => {
     return [rowCount, colCount];
 }
 
+/**
+ * 清空所有已激活状态的坐标
+ */
+const inactivateAll = () => { }
+
 initialize();
 
 export default {
     activate,
     inactivate,
+    inactivateAll,
     getSize,
 }

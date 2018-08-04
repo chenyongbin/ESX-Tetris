@@ -12,29 +12,30 @@ class TetrisDatabase {
      * @param {number} y - 纵坐标最大值
      */
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
     }
 
     /**
-     * 添加一个方块
-     * @param {object[]} coordinates - 方块坐标数组
+     * 更新方块坐标
+     * @param {object[]} lastCoordinates - 方块上个坐标数组
+     * @param {object[]} coordinates - 方块新的坐标数组
      * @returns {number[]} 已填满的行的行号数组
      */
-    add(coordinates) { }
-
-    /**
-     * 更新一个方块
-     * @param {object[]} coordinates - 方块坐标数组
-     * @returns {number[]} 已填满的行的行号数组
-     */
-    update(coordinates) { }
+    update(lastCoordinates, coordinates) {
+        return { isFailed: false, isReachedBoundary: false, filledRows: [] };
+    }
 
     /**
      * 返回所有方块数据
      * @returns {object[]}
      */
     all() { }
+
+    /**
+     * 清空现有数据
+     */
+    clear() { }
 }
 
 export default TetrisDatabase;

@@ -1,4 +1,4 @@
-# ES-X版俄罗斯方块
+# ECMAScript-X版俄罗斯方块
 
 > 本地编译操作
 
@@ -18,11 +18,11 @@
          |--- builder.js 方块生成器
          |--- db.js 数据库
          |--- timer.js 定时器
-         |--- index.js 引擎逻辑区
-    |--- bootstrap.js 引导程模块    
-    |--- gamepad.js 游戏手柄模块
-    |--- grid.js 网格模块
-    |--- notice.js 通知模块
+         |--- index.js 引擎主流程
+    |--- bootstrap.js 引导程序    
+    |--- gamepad.js 游戏手柄
+    |--- grid.js 网格
+    |--- notice.js 通知
     |--- config.js 配置
-    |--- containers.js 各显示内容的容器对象
+    |--- containers.js 各种容器对象
     |--- template.html html模板文件

@@ -12,11 +12,17 @@
 > 目录介绍
 
     src
-    |--- var
-         |--- containers.js 各模块DOM容器对象
-         |--- config.js 各配置常量
-    |--- bootstrap.js 引导程模块
-    |--- engine.js 引擎模块
+    |--- css
+         |--- style.css 样式
+    |--- engine
+         |--- builder.js 方块生成器
+         |--- db.js 数据库
+         |--- timer.js 定时器
+         |--- index.js 引擎逻辑区
+    |--- bootstrap.js 引导程模块    
     |--- gamepad.js 游戏手柄模块
     |--- grid.js 网格模块
-    |--- notice.js 通知模块        
+    |--- notice.js 通知模块
+    |--- config.js 配置
+    |--- containers.js 各显示内容的容器对象
+    |--- template.html html模板文件

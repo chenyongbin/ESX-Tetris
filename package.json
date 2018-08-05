@@ -1,7 +1,7 @@
 {
   "name": "ESX-Tetris",
   "version": "1.0.0",
-  "description": "> 本地编译操作",
+  "description": "配置文件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,13 +12,13 @@
     "type": "git",
     "url": "git+https://github.com/chenyongbin/ESX-Tetris.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["es6","javascript","tetris","game"],
+  "author": "Albin",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/chenyongbin/ESX-Tetris/issues"
   },
-  "homepage": "https://github.com/chenyongbin/ESX-Tetris#readme",
+  "homepage": "https://github.com/chenyongbin/ESX-Tetris",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",

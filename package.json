@@ -12,7 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/chenyongbin/ESX-Tetris.git"
   },
-  "keywords": ["es6","javascript","tetris","game"],
+  "keywords": [
+    "es6",
+    "javascript",
+    "tetris",
+    "game"
+  ],
   "author": "Albin",
   "license": "ISC",
   "bugs": {

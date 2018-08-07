@@ -24,6 +24,8 @@ engine.initialize({
     gridSize: grid.getSize(),
     activateHandler: grid.activate,
     inactivateHandler: grid.inactivate,
+    highlightHandler: grid.highlight,
+    unhighlightHandler: grid.unhighlight,
     inactivateAllHandler: grid.inactivateAll,
     renderScoreHandler: notice.renderScore,
     renderNextBlockHandler: notice.renderNextBlock

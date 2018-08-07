@@ -22,8 +22,7 @@ let $container = getGridContainer(),
     rowCount = getGridRowCount(),
     colCount = getGridColCount(),
     activeClass = 'active',
-    highlightClass = 'highlight',
-    clearFilledRowsAnimationDuration = 300;
+    highlightClass = 'highlight';
 
 /**
  * 初始化
@@ -53,27 +52,49 @@ const activate = coordiantes => {
 }
 
 /**
- * 取消激活一个坐标集合/某些行
- * @param {object[]|number[]} coordiantes - 坐标点集合/纵坐标集合
+ * 取消激活一个坐标集/某些行
+ * @param {object[]|number[]} coordiantes - 坐标点集合/纵坐标集
  */
 const inactivate = coordiantes => {
     if (!checkIsArray(coordiantes)) return false;
     if (coordiantes.length == 0) return false
 
     if (typeof coordiantes[0] === 'number') {
+        // 取消激活某些行
         for (let y of coordiantes) {
-            $container.find(`[data-row='y-${y}']`).addClass(highlightClass);
+            $container.find(`[data-row='y-${y}'] .cell`).removeClass(activeClass);
         }
-        setTimeout(() => {
-            for (let y of coordiantes) {
-                $container.find(`[data-row='y-${y}']`).removeClass(highlightClass);
-                $container.find(`[data-row='y-${y}'] .cell`).removeClass(activeClass);
-            }
-        }, clearFilledRowsAnimationDuration);
     } else if (typeof coordiantes[0] === 'object') {
+        // 取消激活坐标集
         for (let coordinate of coordiantes) {
             $container.find(`[data-point='p-${coordinate.x}-${coordinate.y}']`).removeClass(activeClass);
         }
+    }
+}
+
+/**
+ * 高亮已填充满的行
+ * @param {number[]} rows - 行标数组
+ */
+const highlight = rows => {
+    if (!checkIsArray(rows)) return false;
+    if (rows.length == 0) return false;
+
+    for (let y of rows) {
+        $container.find(`[data-row='y-${y}']`).addClass(highlightClass);
+    }
+}
+
+/**
+ * 取消高亮已填充满的行
+ * @param {number[]} rows - 行标数组 
+ */
+const unhighlight = rows => {
+    if (!checkIsArray(rows)) return false;
+    if (rows.length == 0) return false;
+
+    for (let y of rows) {
+        $container.find(`[data-row='y-${y}']`).removeClass(highlightClass);
     }
 }
 
@@ -89,7 +110,8 @@ const getSize = () => {
  * 清空所有已激活状态的坐标
  */
 const inactivateAll = () => {
-    $container.find(".cell").removeClass(activeClass).removeClass(highlightClass);
+    $container.find(`.${highlightClass}`).removeClass(highlightClass);
+    $container.find(`.${activeClass}`).removeClass(activeClass);
 }
 
 initialize();
@@ -97,6 +119,8 @@ initialize();
 export default {
     activate,
     inactivate,
-    inactivateAll,
+    highlight,
+    unhighlight,
+    inactivateAll,    
     getSize,
 }

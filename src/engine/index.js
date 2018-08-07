@@ -9,11 +9,11 @@ import builder from './builder';
 import TetrisTimer from './timer';
 import TetrisDatabase from './db';
 
-let activateGrid = null, inactivateGrid = null, clearGrid = null,
-    totalScore = 0, lastScore = 0, renderScore = null,
-    curBlock = null, nextBlock = null, renderNextBlock,
+let activateGrid = null, inactivateGrid = null, highlightGrid = null, unhighlightGrid = null, clearGrid = null,
+    totalScore = 0, lastScore = 0, renderScoreInNotice = null,
+    curBlock = null, nextBlock = null, renderNextBlockInNotice = null,
     db = null, gridRowCount = 0, gridColCount = 0,
-    timer = null, timerInterval = 1000,
+    timer = null, timerInterval = 1000, clearFilledRowsAnimationDuration = 300,
     isInitialized = false;
 
 /**
@@ -22,22 +22,29 @@ let activateGrid = null, inactivateGrid = null, clearGrid = null,
  * @param {number[]} startOptions.gridSize - 网格尺寸
  * @param {number} startOptions.gridSize.rowCount - 行的数目
  * @param {number} startOptions.gridSize.colCount - 列的数目
- * @param {function} startOptions.activateHandler - 激活操作的处理方法
- * @param {function} startOptions.inactivateHandler - 取消激活操作的处理方法
- * @param {function} startOptions.inactivateAllHandler - 取消激活所有操作的处理方法
- * @param {function} startOptions.renderScoreHandler - 更新得分的处理方法
- * @param {function} startOptions.renderNextBlockHandler - 更新下个方块的处理方法
+ * @param {function} startOptions.activateHandler - 激活坐标集
+ * @param {function} startOptions.inactivateHandler - 取消激活坐标集/某些行
+ * @param {function} startOptions.highlightHandler - 高亮显示某些行
+ * @param {function} startOptions.unhighlightHandler - 取消高亮显示某些行
+ * @param {function} startOptions.inactivateAllHandler - 取消激活所有操作
+ * @param {function} startOptions.renderScoreHandler - 更新得分
+ * @param {function} startOptions.renderNextBlockHandler - 更新下个方块
  */
-const initialize = ({ gridSize, activateHandler, inactivateHandler, inactivateAllHandler, renderScoreHandler, renderNextBlockHandler }) => {
-    // 赋值变量
-    [gridRowCount, gridColCount] = gridSize;
-    [activateGrid, inactivateGrid, clearGrid] = [activateHandler, inactivateHandler, inactivateAllHandler];
-    [renderScore, renderNextBlock] = [renderScoreHandler, renderNextBlockHandler];
+const initialize = ({
+    gridSize: [gridRowCount, gridColCount],
+    activateHandler: activateGrid,
+    inactivateHandler: inactivateGrid,
+    highlightHandler: highlightGrid,
+    unhighlightHandler: unhighlightGrid,
+    inactivateAllHandler: clearGrid,
+    renderScoreHandler: renderScoreInNotice,
+    renderNextBlockHandler: renderNextBlockInNotice
+}) => {
     // 初始化数据库对象
     db = new TetrisDatabase(gridColCount, gridRowCount);
     // 初始化定时器
     timer = new TetrisTimer(timerInterval, onTimerElapsed);
-
+    // 标记已成功初始化
     isInitialized = true;
 }
 
@@ -56,8 +63,8 @@ const onTimerElapsed = () => {
     if (curBlock == null) {
         curBlock = nextBlock == null ? builder.getBlock() : nextBlock;
         nextBlock = builder.getBlock();
-        renderNextBlock(nextBlock.coordinates);
-    }    
+        renderNextBlockInNotice(nextBlock.coordinates);
+    }
 
     // 方块向下移动一次
     curBlock.down();
@@ -86,12 +93,16 @@ const onCurrentBlockMoved = () => {
         // 如果有已填满的行
         if (filledRows.length > 0) {
             // 消除这些行，并更新整个网格的状态
-            inactivateGrid(filledRows);
-            activateGrid(db.all());
+            highlightGrid(filledRows);
+            setTimeout(() => {
+                unhighlightGrid(filledRows);
+                inactivateGrid(filledRows);
+                activateGrid(db.all());
+            }, clearFilledRowsAnimationDuration);
             // 计算得分，并推送给通知栏更新得分
             lastScore = calculateScore(filledRows);
             totalScore += lastScore;
-            renderScore({ totalScore: totalScore, lastScore: lastScore });
+            renderScoreInNotice({ totalScore: totalScore, lastScore: lastScore });
         }
     }
 
@@ -116,8 +127,8 @@ const calculateScore = filledRows => {
 const start = () => {
     db.clear();
     clearGrid();
-    renderScore({ totalScore: 0, lastScore: 0 });
-    renderNextBlock([]);
+    renderScoreInNotice({ totalScore: 0, lastScore: 0 });
+    renderNextBlockInNotice([]);
     curBlock = null;
     nextBlock = null;
     timer.start();
@@ -187,12 +198,12 @@ const moveFall = () => {
 
 /**
  * 包装向外暴露的接口
+ * @param {function} fn - 待包装，向外暴露的功能方法
  * @param {object} options - 包装接口的参数
  * @param {function[]} options.pres - 前置执行方法，这些方法可能会抛出异常
- * @param {function} options.fn - 向外暴露的功能方法
  * @param {function[]} options.posts - 后置执行方法，执行完功能方法后执行这些方法
  */
-const wrapInterface = ({ pres = [checkInitialization], fn, posts }) => {
+const wrapInterface = (fn, { pres = [checkInitialization], posts } = {}) => {
     return function () {
         if (pres && pres.length) {
             for (let pre of pres) {
@@ -212,11 +223,11 @@ const wrapInterface = ({ pres = [checkInitialization], fn, posts }) => {
 
 export default {
     initialize,
-    start: wrapInterface({ fn: start }),
-    pause: wrapInterface({ fn: pause }),
-    moveRotate: wrapInterface({ fn: moveRotate, posts: [onCurrentBlockMoved] }),
-    moveLeft: wrapInterface({ fn: moveLeft, posts: [onCurrentBlockMoved] }),
-    moveRight: wrapInterface({ fn: moveRight, posts: [onCurrentBlockMoved] }),
-    moveDown: wrapInterface({ fn: moveDown, posts: [onCurrentBlockMoved] }),
-    moveFall: wrapInterface({ fn: moveFall }),
+    start: wrapInterface(start),
+    pause: wrapInterface(pause),
+    moveRotate: wrapInterface(moveRotate, { posts: [onCurrentBlockMoved] }),
+    moveLeft: wrapInterface(moveLeft, { posts: [onCurrentBlockMoved] }),
+    moveRight: wrapInterface(moveRight, { posts: [onCurrentBlockMoved] }),
+    moveDown: wrapInterface(moveDown, { posts: [onCurrentBlockMoved] }),
+    moveFall: wrapInterface(moveFall),
 }

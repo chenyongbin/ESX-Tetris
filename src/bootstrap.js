@@ -10,24 +10,26 @@ import engine from './engine';
 import gamepad from './gamepad';
 import notice from './notice';
 
-gamepad.bindMoveHandlers({
-    pauseHandler: engine.pause,
-    startoverhandler: engine.start,
-    moveRotateHandler: engine.moveRotate,
-    moveLeftHandler: engine.moveLeft,
-    moveRightHandler: engine.moveRight,
-    moveDownHandler: engine.moveDown,
-    moveFallHandler: engine.moveFall
-});
+$(function () {
+    gamepad.bindMoveHandlers({
+        pauseHandler: engine.pause,
+        startoverhandler: engine.start,
+        moveRotateHandler: engine.moveRotate,
+        moveLeftHandler: engine.moveLeft,
+        moveRightHandler: engine.moveRight,
+        moveDownHandler: engine.moveDown,
+        moveFallHandler: engine.moveFall
+    });
 
-engine.initialize({
-    gridSize: grid.getSize(),
-    activateHandler: grid.activate,
-    inactivateHandler: grid.inactivate,
-    highlightHandler: grid.highlight,
-    unhighlightHandler: grid.unhighlight,
-    inactivateAllHandler: grid.inactivateAll,
-    renderScoreHandler: notice.renderScore,
-    renderNextBlockHandler: notice.renderNextBlock
+    engine.initialize({
+        gridSize: grid.getSize(),
+        activateHandler: grid.activate,
+        inactivateHandler: grid.inactivate,
+        highlightHandler: grid.highlight,
+        unhighlightHandler: grid.unhighlight,
+        inactivateAllHandler: grid.inactivateAll,
+        renderScoreHandler: notice.renderScore,
+        renderNextBlockHandler: notice.renderNextBlock
+    });
+    // engine.start();
 });
-// engine.start();

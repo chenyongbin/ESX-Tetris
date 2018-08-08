@@ -5,8 +5,8 @@
  * @version 0.0.1
  */
 
-import { getGamepadContainer } from './containers';
-let $container = getGamepadContainer();
+
+import { gamepadContainer as $container } from './util';
 
 /**
  * 初始化

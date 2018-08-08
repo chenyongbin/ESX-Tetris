@@ -5,9 +5,10 @@
  * @version 0.0.1
  */
 
-import { getNoticeContainer } from './containers';
-let $container = getNoticeContainer();
-import { checkIsArray } from './util';
+import {
+    noticeContainer as $container,
+    checkIsArray
+} from './util';
 
 /**
  * 初始化

@@ -12,12 +12,12 @@ class TetrisTimer {
      * @param {function} fn - 定时器间隔执行方法
      */
     constructor(interval, fn) {
-        this.isPaused = false;
+        this._isPaused = false;
+        this._timerId = -1;
         this.interval = interval;
         this.intervalFn = () => {
             !this._isPaused && fn && fn();
-        };
-        this._timerId = -1;
+        };        
     }
 
     /**

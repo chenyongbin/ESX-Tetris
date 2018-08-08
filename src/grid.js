@@ -14,12 +14,14 @@
  (0,1)********(1,1)
  */
 
-import { getGridRowCount, getGridColCount } from './config';
-import { getGridContainer } from './containers';
-import { checkIsArray } from './util';
+import {
+    gridContainer as $container,
+    getGridRowCount,
+    getGridColCount,
+    checkIsArray
+} from './util';
 
-let $container = getGridContainer(),
-    rowCount = getGridRowCount(),
+let rowCount = getGridRowCount(),
     colCount = getGridColCount(),
     activeClass = 'active',
     highlightClass = 'highlight';
@@ -121,6 +123,6 @@ export default {
     inactivate,
     highlight,
     unhighlight,
-    inactivateAll,    
+    inactivateAll,
     getSize,
 }

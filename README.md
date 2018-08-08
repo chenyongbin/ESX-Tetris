@@ -18,11 +18,10 @@
          |--- builder.js 方块生成器
          |--- db.js 数据库
          |--- timer.js 定时器
-         |--- index.js 引擎主流程
+         |--- index.js 引擎主流程
     |--- bootstrap.js 引导程序    
     |--- gamepad.js 游戏手柄
     |--- grid.js 网格
-    |--- notice.js 通知
-    |--- config.js 配置
-    |--- containers.js 各种容器对象
+    |--- notice.js 通知    
+    |--- util.js 功能模块
     |--- template.html html模板文件

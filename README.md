@@ -12,16 +12,22 @@
 > 目录介绍
 
     src
-    |--- css
-         |--- style.css 样式
+    |--- control
+         |--- index.js 控制板主流程
     |--- engine
          |--- builder.js 方块生成器
          |--- db.js 数据库
          |--- timer.js 定时器
          |--- index.js 引擎主流程
-    |--- bootstrap.js 引导程序    
-    |--- gamepad.js 游戏手柄
-    |--- grid.js 网格
-    |--- notice.js 通知    
+    |--- html
+         |--- template.html html模板文件
+    |--- screen
+         |--- block.js 方块类
+         |--- index.js 屏幕主流程
+         |--- matrix.js 方块矩阵
+         |--- state.js 状态
+    |--- bootstrap.js 引导程序
+    |--- canvas.js 画布类
+    |--- config.js 配置文件
+    |--- gamepanel.js 游戏面板    
     |--- util.js 功能模块
-    |--- template.html html模板文件

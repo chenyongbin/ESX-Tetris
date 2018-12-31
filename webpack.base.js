@@ -1,35 +1,20 @@
-const path = require('path');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+const path = require("path");
+const ExtractTextWebpackPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: {
-        main: './src/bootstrap.js'
-    },
-    output: {
-        path: path.resolve(__dirname, 'assets'),
-        filename: "[name].js?v=[chunkhash:7]"
-    },
-    module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: ExtractTextWebpackPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                        loader: 'css-loader',
-                        options: {
-                            minimize: true
-                        }
-                    }]
-                })
-            },
-            {
-                test: /\.js$/,
-                use: 'babel-loader'
-            }
-        ]
-    },
-    plugins: [
-        new ExtractTextWebpackPlugin('css/style.css?[chunkhash:7]')
+  entry: {
+    main: "./src/bootstrap.js"
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "bundle.js?v=[chunkhash:7]"
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: "babel-loader"
+      }
     ]
-}
+  }
+};

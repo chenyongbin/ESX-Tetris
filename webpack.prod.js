@@ -7,7 +7,7 @@ module.exports = merge(webpackBase, {
     devtool: 'source-map',
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/template.html',
+            template: 'src/html/template.html',
             filename: '../index.html'
         })
     ]

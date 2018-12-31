@@ -7,11 +7,11 @@ module.exports = merge(webpackBase, {
     mode: 'development',
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: path.resolve(process.cwd(), 'assets')
+        contentBase: path.resolve(process.cwd(), 'dist')
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/template.html',            
+            template: 'src/html/template.html',            
             filename: 'index.html'            
         })
     ]

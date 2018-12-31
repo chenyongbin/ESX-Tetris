@@ -37,16 +37,29 @@ const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
     horizontalBlockNumber * matrixWidthProportion
   );
 
+  let matrixWidth =
+      MATRIX_CONFIG.blockSize * horizontalBlockNumber +
+      2 * MATRIX_CONFIG.borderWidth,
+    matrixHeight =
+      MATRIX_CONFIG.blockSize * verticalBlockNumber +
+      2 * MATRIX_CONFIG.borderWidth;
+
   Matrix.initialize(
     containerDOM,
     offsetX,
     offsetY,
-    MATRIX_CONFIG.blockSize * horizontalBlockNumber +
-      2 * MATRIX_CONFIG.borderWidth,
-    MATRIX_CONFIG.blockSize * verticalBlockNumber +
-      2 * MATRIX_CONFIG.borderWidth,
+    matrixWidth,
+    matrixHeight,
     horizontalBlockNumber,
     verticalBlockNumber
+  );
+
+  State.initialize(
+    containerDOM,
+    offsetX + matrixWidth,
+    offsetY,
+    width - 2 * paddingX - matrixWidth,
+    height - 2 * paddingY
   );
 };
 

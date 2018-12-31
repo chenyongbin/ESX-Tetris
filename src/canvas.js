@@ -30,6 +30,7 @@ export default class Canvas {
     this.clearRect = this.clearRect.bind(this);
     this.measureText = this.measureText.bind(this);
     this.fillText = this.fillText.bind(this);
+    this.fillHalfEllipse = this.fillHalfEllipse.bind(this);
   }
 
   setStyles(styles) {
@@ -65,5 +66,45 @@ export default class Canvas {
   fillText(text, x, y, options) {
     extend(this.context, options);
     this.context.fillText(text, x, y);
+  }
+
+  fillHalfEllipse(
+    x,
+    y,
+    radius,
+    isHorizontal,
+    anticlockwise,
+    scale,
+    options = { fillStyle: "black" }
+  ) {
+    let scaleX = 1,
+      scaleY = 1,
+      startAngle = 0,
+      endAngle = 0;
+    if (isHorizontal === true) {
+      scaleY = scale;
+      endAngle = Math.PI;
+    } else {
+      scaleX = scale;
+      startAngle = Math.PI / 2;
+      endAngle = (Math.PI * 3) / 2;
+    }
+
+    this.context.save();
+    extend(this.context, options);
+    this.context.beginPath();
+    this.context.closePath();
+    this.context.moveTo(x, y);
+    this.context.scale(scaleX, scaleY);
+    this.context.arc(
+      x / scaleX,
+      y / scaleY,
+      radius,
+      startAngle,
+      endAngle,
+      anticlockwise
+    );
+    this.context.fill();
+    this.context.restore();
   }
 }

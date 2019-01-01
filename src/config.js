@@ -28,4 +28,6 @@ export const state = {
   left: 10
 };
 
-export const control = {};
+export const control = {
+  padding: 10
+};

@@ -13,6 +13,7 @@
 
     src
     |--- control
+         |--- button.js 按钮类
          |--- index.js 控制板主流程
     |--- engine
          |--- builder.js 方块生成器
@@ -23,6 +24,8 @@
          |--- template.html html模板文件
     |--- screen
          |--- block.js 方块类
+         |--- digit.js 数字类
+         |--- digitsequnce.js 数字序列类
          |--- index.js 屏幕主流程
          |--- matrix.js 方块矩阵
          |--- state.js 状态

@@ -10,19 +10,32 @@ if (!containerDOM) {
   throw new Error("Cannot find container.");
 }
 
-import gamePanel from "./gamepanel";
-import screen from "./screen";
+import GamePanel from "./gamepanel";
+import Screen from "./screen";
+import Control from "./control";
 
-gamePanel.initialize(containerDOM);
-screen.initialize(containerDOM, gamePanel.getScreenOptions());
+GamePanel.initialize(containerDOM);
+Screen.initialize(containerDOM, GamePanel.getScreenOptions());
+Control.initialize(containerDOM, GamePanel.getControlOptions());
 
-// let block = [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 0 }];
-// let newBlock = [];
-// block.forEach(b => {
-//   newBlock.push({ x: b.x + 4, y: b.y + 7 });
-// });
-
-// screen.updateScore(12345);
-// screen.updateEliminatedRowNum(34);
-// screen.activate(newBlock);
-// screen.updateNextBlock(block);
+Control.addDropButtonEventHandler(function() {
+  console.log("处理【掉落】事件");
+});
+Control.addLeftButtonEventHandler(function() {
+  console.log("处理【左移】事件");
+});
+Control.addRightButtonEventHandler(function() {
+  console.log("处理【右移】事件");
+});
+Control.addDownButtonEventHandler(function() {
+  console.log("处理【下移】事件");
+});
+Control.addRotateButtonEventHandler(function() {
+  console.log("处理【旋转】事件");
+});
+Control.addRestartButtonEventHandler(function() {
+  console.log("处理【重新开始】事件");
+});
+Control.addPauseButtonEventHandler(function() {
+  console.log("处理【暂停】事件");
+});

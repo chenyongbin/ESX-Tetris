@@ -31,6 +31,8 @@ export default class Canvas {
     this.measureText = this.measureText.bind(this);
     this.fillText = this.fillText.bind(this);
     this.fillHalfEllipse = this.fillHalfEllipse.bind(this);
+    this.fillCircle = this.fillCircle.bind(this);
+    this.getLinearGradient = this.getLinearGradient.bind(this);
   }
 
   setStyles(styles) {
@@ -64,8 +66,10 @@ export default class Canvas {
   }
 
   fillText(text, x, y, options) {
+    this.context.save();
     extend(this.context, options);
     this.context.fillText(text, x, y);
+    this.context.restore();
   }
 
   fillHalfEllipse(
@@ -106,5 +110,26 @@ export default class Canvas {
     );
     this.context.fill();
     this.context.restore();
+  }
+
+  fillCircle(x, y, radius, startAngle, endAngle, anticlockwise, options = {}) {
+    this.context.save();
+    extend(this.context, options);
+    this.context.beginPath();
+    this.context.moveTo(x, y);
+    this.context.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+    this.context.closePath();
+    this.context.fill();
+    this.context.restore();
+  }
+
+  getLinearGradient(x0, y0, x1, y1, colorStops = []) {
+    let gradient = this.context.createLinearGradient(x0, y0, x1, y1);
+    if (Array.isArray(colorStops)) {
+      colorStops.forEach(stop => {
+        gradient.addColorStop(stop.position, stop.color);
+      });
+    }
+    return gradient;
   }
 }

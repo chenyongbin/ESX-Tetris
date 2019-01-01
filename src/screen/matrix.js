@@ -67,6 +67,7 @@ const initialize = function(
         { fillStyle: MATRIX_CONFIG.bgBlockBackgroundColor }
       );
       block.canvas = canvas;
+      block.isActive = false;
       BLOCKS_MAP[getBlockKey(i, j)] = block;
     }
   }

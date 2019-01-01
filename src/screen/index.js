@@ -67,5 +67,8 @@ export default {
   initialize,
   activate: Matrix.activate,
   inactivate: Matrix.inactivate,
-  highlight: Matrix.highlight
+  highlight: Matrix.highlight,
+  updateScore: State.updateScore,
+  updateEliminatedRowNum: State.updateEliminatedRowNum,
+  updateNextBlock: State.updateNextBlock
 };

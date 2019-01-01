@@ -19,6 +19,7 @@ export default class Block {
       size: this.outline.size - this.borderWidth * 2 - this.padding * 2
     };
 
+    this.isActive = false;
     this.activate = this.activate.bind(this);
     this.inactivate = this.inactivate.bind(this);
   }
@@ -27,6 +28,7 @@ export default class Block {
     outlineOptions = { strokeStyle: "black" },
     coreOptions = { fillStyle: "black" }
   ) {
+    if (this.isActive) return;
     this.canvas.strokeRect(
       this.outline.x,
       this.outline.y,
@@ -41,9 +43,12 @@ export default class Block {
       this.core.size,
       coreOptions
     );
+    this.isActive = true;
   }
 
   inactivate() {
+    if (!this.isActive) return;
     this.canvas.clearRect(this.x, this.y, this.size, this.size);
+    this.isActive = false;
   }
 }

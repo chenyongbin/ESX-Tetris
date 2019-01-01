@@ -1,11 +1,9 @@
 const showDigit = function(canvas, d, fillStyle) {
-  let radius = d.size / 2 - 1;
-
   if (![1, 4].includes(d.digit)) {
     d.canvas.fillHalfEllipse(
       d.x + d.size / 2,
       d.y,
-      radius,
+      d.radius,
       true,
       false,
       d.scale,
@@ -17,7 +15,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x + d.size,
       d.y + d.size / 2,
-      radius,
+      d.radius,
       false,
       false,
       d.scale,
@@ -29,7 +27,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x + d.size,
       d.y + d.size * 1.5,
-      radius,
+      d.radius,
       false,
       false,
       d.scale,
@@ -41,7 +39,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x + d.size / 2,
       d.y + d.size * 2,
-      radius,
+      d.radius,
       true,
       true,
       d.scale,
@@ -53,7 +51,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x,
       d.y + d.size * 1.5,
-      radius,
+      d.radius,
       false,
       true,
       d.scale,
@@ -65,7 +63,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x + d.size / 2,
       d.y + d.size,
-      radius,
+      d.radius,
       true,
       false,
       d.scale,
@@ -77,7 +75,7 @@ const showDigit = function(canvas, d, fillStyle) {
     canvas.fillHalfEllipse(
       d.x,
       d.y + d.size / 2,
-      radius,
+      d.radius,
       false,
       true,
       d.scale,
@@ -97,6 +95,8 @@ export default class Digit {
     this.y = y;
     this.size = size;
     this.scale = 0.4;
+    this.radius = this.size / 2 - 1;
+    this.scaleRadius = this.scale * this.radius;
     this.digit = 8;
     this.bgCanvas = bgCanvs;
     this.canvas = canvas;
@@ -111,15 +111,35 @@ export default class Digit {
     digit = Number.parseInt(digit);
     if (!Number.isInteger(digit) || digit < 0 || digit > 9) return;
     this.digit = digit;
-    this.bgCanvas.clearRect(this.x, this.y, this.size, this.size * 2);
-    this.canvas.clearRect(this.x, this.y, this.size, this.size * 2);
+    this.bgCanvas.clearRect(
+      this.x - this.scaleRadius,
+      this.y - this.scaleRadius,
+      this.size + 2 * this.scaleRadius,
+      this.size * 2 + 2 * this.scaleRadius
+    );
+    this.canvas.clearRect(
+      this.x - this.scaleRadius,
+      this.y - this.scaleRadius,
+      this.size + 2 * this.scaleRadius,
+      this.size * 2 + 2 * this.scaleRadius
+    );
     showDigit(this.canvas, this);
   }
 
   hide() {
     this.digit = 8;
-    this.bgCanvas.clearRect(this.x, this.y, this.size, this.size * 2);
-    this.canvas.clearRect(this.x, this.y, this.size, this.size * 2);
+    this.bgCanvas.clearRect(
+      this.x - this.scaleRadius,
+      this.y - this.scaleRadius,
+      this.size + 2 * this.scaleRadius,
+      this.size * 2 + 2 * this.scaleRadius
+    );
+    this.canvas.clearRect(
+      this.x - this.scaleRadius,
+      this.y - this.scaleRadius,
+      this.size + 2 * this.scaleRadius,
+      this.size * 2 + 2 * this.scaleRadius
+    );
     showDigit(this.bgCanvas, this, "#84946e");
   }
 }

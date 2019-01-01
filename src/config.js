@@ -17,10 +17,15 @@ export const matrix = {
   bgBlockBackgroundColor: "#84946e",
   blockBorderColor: "#010101",
   blockBackgroundColor: "#000",
-  highlightBlockBorderColor:'#560000',
-  highlightBlockBackgroundColor:'#560000'
+  highlightBlockBorderColor: "#560000",
+  highlightBlockBackgroundColor: "#560000"
 };
 
-export const state = {};
+export const state = {
+  font: "16px Arial",
+  fontSize: 16,
+  top: 20,
+  left: 10
+};
 
 export const control = {};

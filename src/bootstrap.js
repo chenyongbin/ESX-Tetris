@@ -15,3 +15,14 @@ import screen from "./screen";
 
 gamePanel.initialize(containerDOM);
 screen.initialize(containerDOM, gamePanel.getScreenOptions());
+
+// let block = [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 0 }];
+// let newBlock = [];
+// block.forEach(b => {
+//   newBlock.push({ x: b.x + 4, y: b.y + 7 });
+// });
+
+// screen.updateScore(12345);
+// screen.updateEliminatedRowNum(34);
+// screen.activate(newBlock);
+// screen.updateNextBlock(block);

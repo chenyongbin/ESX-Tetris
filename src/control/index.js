@@ -15,12 +15,7 @@ const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
     height,
     "控制器主画布"
   );
-  canvas.setStyles([
-    "position:absolute;",
-    `top:${offsetY}px;`,
-    `left:${offsetX}px;`,
-    "z-index:3;"
-  ]);
+  canvas.setStyles(["z-index:3;"]);
 
   let radius = (height - 2 * CONTROL_CONFIG.padding) / 6;
   BUTTONS_MAP["DROP"] = new Button(

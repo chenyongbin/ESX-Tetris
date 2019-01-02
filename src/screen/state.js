@@ -22,12 +22,7 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
     height,
     "State Background Canvas"
   );
-  bgCanvas.setStyles([
-    "position:absolute;",
-    `top:${offsetY}px;`,
-    `left:${offsetX}px;`,
-    "z-index:2;"
-  ]);
+  bgCanvas.setStyles(["z-index:2;"]);
 
   canvas = new Canvas(
     containerDOM,
@@ -37,12 +32,7 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
     height,
     "State Main Canvas"
   );
-  canvas.setStyles([
-    "position:absolute;",
-    `top:${offsetY}px;`,
-    `left:${offsetX}px;`,
-    "z-index:3;"
-  ]);
+  canvas.setStyles(["z-index:3;"]);
 
   width -= STATE_CONFIG.left;
   height -= STATE_CONFIG.top;

@@ -32,12 +32,7 @@ const initialize = function(
     height,
     "Matrix Background Canvas"
   );
-  bgCanvas.setStyles([
-    "position:absolute;",
-    `top:${offsetY}px;`,
-    `left:${offsetX}px;`,
-    "z-index:2;"
-  ]);
+  bgCanvas.setStyles(["z-index:2;"]);
 
   canvas = new Canvas(
     containerDOM,
@@ -47,12 +42,7 @@ const initialize = function(
     height,
     "Matrix Main Canvas"
   );
-  canvas.setStyles([
-    "position:absolute;",
-    `top:${offsetY}px;`,
-    `left:${offsetX}px;`,
-    "z-index:3;"
-  ]);
+  canvas.setStyles(["z-index:3;"]);
 
   for (let i = 0; i < horizontalSize; i++) {
     for (let j = 0; j < verticalSize; j++) {

@@ -10,7 +10,7 @@ let screenOptions = { offsetX: 0, offsetY: 0, width: 0, height: 0 },
 
 const initialize = function(containerDOM) {
   let width = containerDOM.clientWidth,
-    height = container.clientHeight;
+    height = containerDOM.clientHeight;
 
   screenOptions = {
     offsetX: PANEL_CONFIG.screenMargin,
@@ -31,7 +31,7 @@ const initialize = function(containerDOM) {
   };
 
   let canvas = new Canvas(containerDOM, 0, 0, width, height);
-  canvas.setStyles(["position:absolute;", "top:0;", "z-index:1;"]);
+  canvas.setStyles(["z-index:1;"]);
   canvas.fillRect(0, 0, width, height, {
     fillStyle: PANEL_CONFIG.backgroundColor
   });

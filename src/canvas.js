@@ -22,6 +22,9 @@ export default class Canvas {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     containerDOM.appendChild(this.canvas);
+    this.canvas.style.position = "absolute";
+    this.canvas.style.left = `${this.offsetX}px`;
+    this.canvas.style.top = `${this.offsetY}px`;
     this.context = this.canvas.getContext("2d");
 
     this.setStyles = this.setStyles.bind(this);

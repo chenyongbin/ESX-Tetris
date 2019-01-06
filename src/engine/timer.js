@@ -5,56 +5,59 @@
  * @version 0.0.1
  */
 
-class TetrisTimer {
-    /**
-     * 
-     * @param {number}} interval - 定时器间隔时间，单位毫秒
-     * @param {function} fn - 定时器间隔执行方法
-     */
-    constructor(interval, fn) {
-        this._isPaused = false;
-        this._timerId = -1;
-        this.interval = interval;
-        this.intervalFn = () => {
-            !this._isPaused && fn && fn();
-        };        
-    }
+let options = {
+    inetrval: 0,
+    handler: null
+  },
+  isPaused = false,
+  timerID = -1;
 
-    /**
-     * 启动
-     */
-    start() {
-        this._timerId = setInterval(this.intervalFn, this.interval);
-    }
+/**
+ * 初始化
+ * @param {integer} interval 定时时间
+ * @param {function} handler 定时器处理器
+ */
+const initialize = (interval, handler) => {
+  options.interval = interval;
+  options.handler = handler;
+};
 
-    /**
-     * 暂停
-     */
-    pause() {
-        this._isPaused = true;
-    }
+/**
+ * 启动
+ */
+const start = () => {
+  stop();
+  timerID = setInterval(() => {
+    !isPaused && options.handler && options.handler();
+  }, options.interval);
+};
 
-    /**
-     * 继续
-     */
-    resume() {
-        this._isPaused = false;
-    }
+/**
+ * 暂停
+ */
+const pause = () => {
+  isPaused = true;
+};
 
-    /**
-     * 停止
-     */
-    stop() {
-        this._isPaused = false;
-        clearInterval(this._timerId);
-    }
+/**
+ * 继续
+ */
+const resume = () => {
+  isPaused = false;
+};
 
-    /**
-     * 检查定时器是否暂停
-     */
-    isPaused() {
-        return this._isPaused;
-    }
-}
+/**
+ * 停止
+ */
+const stop = () => {
+  isPaused = false;
+  timerID && clearInterval(timerID);
+};
 
-export default TetrisTimer
+export default {
+  initialize,
+  start,
+  pause,
+  resume,
+  stop
+};

@@ -8,11 +8,11 @@ let bgCanvas = null,
   verticalSize = 0;
 
 const BLOCKS_MAP = {},
-  getBlockKey = function(x, y) {
+  getBlockKey = (x, y) => {
     return `KEY_${x}_${y}`;
   };
 
-const initialize = function(
+const initialize = (
   containerDOM,
   offsetX,
   offsetY,
@@ -20,7 +20,7 @@ const initialize = function(
   height,
   horizontalBlockNumber,
   verticalBlockNumber
-) {
+) => {
   horizontalSize = horizontalBlockNumber;
   verticalSize = verticalBlockNumber;
 
@@ -67,7 +67,7 @@ const initialize = function(
   });
 };
 
-const activate = function(coordinates) {
+const activate = coordinates => {
   if (!Array.isArray(coordinates)) return;
   coordinates.forEach(({ x, y }) => {
     let block = BLOCKS_MAP[getBlockKey(x, y)];
@@ -79,7 +79,7 @@ const activate = function(coordinates) {
   });
 };
 
-const inactivate = function(coordinates) {
+const inactivate = coordinates => {
   if (!Array.isArray(coordinates)) return;
   coordinates.forEach(({ x, y }) => {
     let block = BLOCKS_MAP[getBlockKey(x, y)];
@@ -87,41 +87,41 @@ const inactivate = function(coordinates) {
   });
 };
 
-const highlightAnimation = function(yCoordinates, count, timer) {
+const highlight = yCoordinates => {
+  if (!Array.isArray(yCoordinates) || yCoordinates.length == 0) return;
+
   yCoordinates.forEach(y => {
     if (!Number.isNaN(y) && y >= 0 && y < verticalSize) {
       for (let i = 0; i < horizontalSize; i++) {
         let block = BLOCKS_MAP[getBlockKey(i, y)];
         if (!block) continue;
-        if (count % 2 == 0) {
-          block.inactivate();
-        } else {
-          block.activate(
-            { strokeStyle: MATRIX_CONFIG.highlightBlockBorderColor },
-            { fillStyle: MATRIX_CONFIG.highlightBlockBackgroundColor }
-          );
-        }
+        block.activate(
+          { strokeStyle: MATRIX_CONFIG.highlightBlockBorderColor },
+          { fillStyle: MATRIX_CONFIG.highlightBlockBackgroundColor }
+        );
       }
     }
   });
-
-  count--;
-  timer && clearTimeout(timer);
-  if (count >= 0) {
-    timer = setTimeout(() => {
-      return highlightAnimation(yCoordinates, count, timer);
-    }, 200);
-  }
 };
 
-const highlight = function(yCoordinates) {
+const unhighlight = yCoordinates => {
   if (!Array.isArray(yCoordinates) || yCoordinates.length == 0) return;
-  highlightAnimation(yCoordinates, 5);
+
+  yCoordinates.forEach(y => {
+    if (!Number.isNaN(y) && y >= 0 && y < verticalSize) {
+      for (let i = 0; i < horizontalSize; i++) {
+        let block = BLOCKS_MAP[getBlockKey(i, y)];
+        if (!block) continue;
+        block.inactivate();
+      }
+    }
+  });
 };
 
 export default {
   initialize,
   activate,
   inactivate,
-  highlight
+  highlight,
+  unhighlight
 };

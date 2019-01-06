@@ -69,11 +69,11 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
   canvas.fillText("下一个", nextBlockOffsetX, nextBlockOffsetY);
   let matrixOffsetX = nextBlockOffsetX,
     matrixOffsetY = nextBlockOffsetY + STATE_CONFIG.fontSize;
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 3; j++) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 2; j++) {
       let block = new Block(
         bgCanvas,
-        matrixOffsetX + i * MATRIX_CONFIG.blockSize + 10,
+        matrixOffsetX + i * MATRIX_CONFIG.blockSize,
         matrixOffsetY + j * MATRIX_CONFIG.blockSize,
         MATRIX_CONFIG.blockSize
       );
@@ -104,7 +104,7 @@ const updateNextBlock = function(coordinates) {
     BLOCKS_MAP[key].inactivate();
   }
   coordinates.forEach(coordinate => {
-    let block = BLOCKS_MAP[getBlockKey(coordinate.x + 1, coordinate.y + 1)];
+    let block = BLOCKS_MAP[getBlockKey(coordinate.x, coordinate.y)];
     block &&
       block.activate(
         { strokeStyle: MATRIX_CONFIG.blockBorderColor },

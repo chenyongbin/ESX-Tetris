@@ -6,7 +6,7 @@ let canvas = null,
   BUTTONS_MAP = {},
   BUTTONS_EVENTHANDLERS_MAP = new Map();
 
-const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
+const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   canvas = new Canvas(
     containerDOM,
     offsetX,
@@ -92,36 +92,36 @@ const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
       clickY = e.pageY - controlPageY;
     for (let name in BUTTONS_MAP) {
       if (BUTTONS_MAP[name].isPointInArea(clickX, clickY)) {
-        console.log(`you clicked button ${name}`);
+        // console.log(`you clicked button ${name}`);
         eventName = name;
         break;
       }
     }
-    eventName && executeButtonEventHandler(eventName);
+    eventName && executeEventHandler(eventName);
   };
 
   document.onkeydown = function(e) {
     switch (e.keyCode) {
       case 32:
-        executeButtonEventHandler("DROP");
+        executeEventHandler("DROP");
         break;
       case 37:
-        executeButtonEventHandler("LEFT");
+        executeEventHandler("LEFT");
         break;
       case 38:
-        executeButtonEventHandler("ROTATE");
+        executeEventHandler("ROTATE");
         break;
       case 39:
-        executeButtonEventHandler("RIGHT");
+        executeEventHandler("RIGHT");
         break;
       case 40:
-        executeButtonEventHandler("DOWN");
+        executeEventHandler("DOWN");
         break;
       case 80:
-        executeButtonEventHandler("PAUSE");
+        executeEventHandler("PAUSE");
         break;
       case 82:
-        executeButtonEventHandler("RESTART");
+        executeEventHandler("RESTART");
         break;
       default:
         console.log(`Unregistered keypress event with keyCode=${e.keyCode}`);
@@ -129,7 +129,7 @@ const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
   };
 };
 
-const getControlOffsetAgainstPage = function() {
+const getControlOffsetAgainstPage = () => {
   if (!canvas) return { offsetX: 0, offsetY: 0 };
   let x = 0,
     y = 0,
@@ -142,7 +142,7 @@ const getControlOffsetAgainstPage = function() {
   return { controlPageX: x, controlPageY: y };
 };
 
-const addButtonEventHandler = function(eventName, handler) {
+const addEventHandler = (eventName, handler) => {
   if (handler && typeof handler == "function") {
     let handlers = BUTTONS_EVENTHANDLERS_MAP.get(eventName);
     if (!handlers) handlers = [];
@@ -151,50 +151,50 @@ const addButtonEventHandler = function(eventName, handler) {
   }
 };
 
-const executeButtonEventHandler = function(eventName) {
+const executeEventHandler = eventName => {
   let handlers = BUTTONS_EVENTHANDLERS_MAP.get(eventName);
   if (!handlers || handlers.length == 0) return;
-  console.log(`begin to execute ${eventName}'s handlers...`);
+  // console.log(`begin to execute ${eventName}'s handlers...`);
   for (let handler of handlers) {
     handler && handler();
   }
 };
 
-const addDropButtonEventHandler = function(handler) {
-  addButtonEventHandler("DROP", handler);
+const addDropEventHandler = handler => {
+  addEventHandler("DROP", handler);
 };
 
-const addLeftButtonEventHandler = function(handler) {
-  addButtonEventHandler("LEFT", handler);
+const addLeftEventHandler = handler => {
+  addEventHandler("LEFT", handler);
 };
 
-const addRightButtonEventHandler = function(handler) {
-  addButtonEventHandler("RIGHT", handler);
+const addRightEventHandler = handler => {
+  addEventHandler("RIGHT", handler);
 };
 
-const addDownButtonEventHandler = function(handler) {
-  addButtonEventHandler("DOWN", handler);
+const addDownEventHandler = handler => {
+  addEventHandler("DOWN", handler);
 };
 
-const addRotateButtonEventHandler = function(handler) {
-  addButtonEventHandler("ROTATE", handler);
+const addRotateEventHandler = handler => {
+  addEventHandler("ROTATE", handler);
 };
 
-const addRestartButtonEventHandler = function(handler) {
-  addButtonEventHandler("RESTART", handler);
+const addRestartEventHandler = handler => {
+  addEventHandler("RESTART", handler);
 };
 
-const addPauseButtonEventHandler = function(handler) {
-  addButtonEventHandler("PAUSE", handler);
+const addPauseEventHandler = handler => {
+  addEventHandler("PAUSE", handler);
 };
 
 export default {
   initialize,
-  addDropButtonEventHandler,
-  addLeftButtonEventHandler,
-  addRightButtonEventHandler,
-  addDownButtonEventHandler,
-  addRotateButtonEventHandler,
-  addRestartButtonEventHandler,
-  addPauseButtonEventHandler
+  addDropEventHandler,
+  addLeftEventHandler,
+  addRightEventHandler,
+  addDownEventHandler,
+  addRotateEventHandler,
+  addRestartEventHandler,
+  addPauseEventHandler
 };

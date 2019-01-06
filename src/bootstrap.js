@@ -13,29 +13,30 @@ if (!containerDOM) {
 import GamePanel from "./gamepanel";
 import Screen from "./screen";
 import Control from "./control";
+import Engine from "./engine";
 
 GamePanel.initialize(containerDOM);
 Screen.initialize(containerDOM, GamePanel.getScreenOptions());
 Control.initialize(containerDOM, GamePanel.getControlOptions());
+let screenMatrixSize = Screen.getSize();
+Engine.initialize({
+  matrixSizeX: screenMatrixSize.matrixSizeX,
+  matrixSizeY: screenMatrixSize.matrixSizeY,
+  activate: Screen.activate,
+  inactivate: Screen.inactivate,
+  highlight: Screen.highlight,
+  unhighlight: Screen.unhighlight,
+  updateScore: Screen.updateScore,
+  updateEliminatedRowNum: Screen.updateEliminatedRowNum,
+  updateNextCharacter: Screen.updateNextBlock
+});
 
-Control.addDropButtonEventHandler(function() {
-  console.log("处理【掉落】事件");
-});
-Control.addLeftButtonEventHandler(function() {
-  console.log("处理【左移】事件");
-});
-Control.addRightButtonEventHandler(function() {
-  console.log("处理【右移】事件");
-});
-Control.addDownButtonEventHandler(function() {
-  console.log("处理【下移】事件");
-});
-Control.addRotateButtonEventHandler(function() {
-  console.log("处理【旋转】事件");
-});
-Control.addRestartButtonEventHandler(function() {
-  console.log("处理【重新开始】事件");
-});
-Control.addPauseButtonEventHandler(function() {
-  console.log("处理【暂停】事件");
-});
+Control.addDropEventHandler(Engine.onMoveDrop);
+Control.addLeftEventHandler(Engine.onMoveLeft);
+Control.addRightEventHandler(Engine.onMoveRight);
+Control.addDownEventHandler(Engine.onMoveDown);
+Control.addRotateEventHandler(Engine.onMoveRotate);
+Control.addRestartEventHandler(Engine.onGameRestart);
+Control.addPauseEventHandler(Engine.onGamePause);
+
+Engine.start();

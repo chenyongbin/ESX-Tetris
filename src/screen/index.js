@@ -8,7 +8,7 @@ let paddingX = 0,
   verticalBlockNumber = 0,
   matrixWidthProportion = 0.7;
 
-const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
+const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   if (MATRIX_CONFIG.blockSize * 13 + 4 * MATRIX_CONFIG.borderWidth > width)
     throw new Error("屏幕所占宽度太小");
   if (MATRIX_CONFIG.blockSize * 15 + 4 * MATRIX_CONFIG.borderWidth > height)
@@ -63,11 +63,20 @@ const initialize = function(containerDOM, { offsetX, offsetY, width, height }) {
   );
 };
 
+const getSize = () => {
+  return {
+    matrixSizeX: horizontalBlockNumber,
+    matrixSizeY: verticalBlockNumber
+  };
+};
+
 export default {
   initialize,
+  getSize,
   activate: Matrix.activate,
   inactivate: Matrix.inactivate,
   highlight: Matrix.highlight,
+  unhighlight: Matrix.unhighlight,
   updateScore: State.updateScore,
   updateEliminatedRowNum: State.updateEliminatedRowNum,
   updateNextBlock: State.updateNextBlock

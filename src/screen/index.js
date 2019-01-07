@@ -79,5 +79,5 @@ export default {
   unhighlight: Matrix.unhighlight,
   updateScore: State.updateScore,
   updateEliminatedRowNum: State.updateEliminatedRowNum,
-  updateNextBlock: State.updateNextBlock
+  updateNextShape: State.updateNextShape
 };

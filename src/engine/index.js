@@ -19,10 +19,12 @@ const INTERVAL = 500,
 let elapsingObject = {
   character: null,
   totalScore: 0,
+  eliminatedRowNum: 0,
   isHighlightAnimating: false,
   clear: function() {
     elapsingObject.character = null;
     elapsingObject.totalScore = 0;
+    elapsingObject.eliminatedRowNum = 0;
     elapsingObject.isHighlightAnimating = false;
   }
 };
@@ -36,7 +38,7 @@ const initialize = screenOptions => {
   SCREEN.unhighlight = screenOptions.unhighlight;
   SCREEN.updateScore = screenOptions.updateScore;
   SCREEN.updateEliminatedRowNum = screenOptions.updateEliminatedRowNum;
-  SCREEN.updateNextCharacter = screenOptions.updateNextCharacter;
+  SCREEN.updateNextCharacter = screenOptions.updateNextShape;
 
   DB.initialize(SCREEN.matrixSizeX, SCREEN.matrixSizeY);
   TIMER.initialize(INTERVAL, onTimerElapsed);
@@ -46,11 +48,11 @@ const onTimerElapsed = () => {
   if (elapsingObject.isHighlightAnimating) return;
 
   while (CHARACTERS.length < 2) {
-    CHARACTERS.push(BUILDER.getCharacter(SCREEN.matrixSizeX));
+    CHARACTERS.push(BUILDER.getShape(SCREEN.matrixSizeX));
   }
 
   if (!elapsingObject.character) {
-    elapsingObject.character = CHARACTERS.pop();
+    elapsingObject.character = CHARACTERS.shift();
     SCREEN.updateNextCharacter(CHARACTERS[0].getRawCoordinates());
   }
 
@@ -78,23 +80,31 @@ const onCharacterMoved = elapsingObject => {
 const onRowsFilled = yCoordinates => {
   if (!yCoordinates || yCoordinates.length == 0) {
     if (DB.isAllFilled()) {
-      console.error("you lose.");
+      console.log(
+        `You lost game at ${new Date().toLocaleString()}, and you got ${
+          elapsingObject.totalScore
+        } in score while you had eliminated ${
+          elapsingObject.eliminatedRowNum
+        } rows.`
+      );
       stop();
     }
     return;
   }
 
-  elapsingObject.totalScore += getScore(yCoordinates);
-  SCREEN.updateScore(elapsingObject.totalScore);
-  SCREEN.updateEliminatedRowNum(yCoordinates.length);
-
   elapsingObject.isHighlightAnimating = true;
   highlightAnimation(yCoordinates, 5, () => {
+    elapsingObject.totalScore += getScore(yCoordinates);
+    SCREEN.updateScore(elapsingObject.totalScore);
+    elapsingObject.eliminatedRowNum += yCoordinates.length;
+    SCREEN.updateEliminatedRowNum(elapsingObject.eliminatedRowNum);
+
     DB.reset(yCoordinates, (inactives, actives) => {
       SCREEN.inactivate(inactives);
       SCREEN.activate(actives);
     });
     elapsingObject.isHighlightAnimating = false;
+
     onRowsFilled(DB.getFilledYCoordinates());
   });
 };
@@ -139,7 +149,7 @@ const highlightAnimation = (yCoordinates, count, callback, timer) => {
   if (count >= 0) {
     timer = setTimeout(() => {
       return highlightAnimation(yCoordinates, count, callback, timer);
-    }, 200);
+    }, 150);
   } else {
     callback && callback();
   }
@@ -152,6 +162,44 @@ const start = () => {
 const stop = () => {
   TIMER.stop();
   elapsingObject.clear();
+
+  fillScreenAnimation(SCREEN.matrixSizeY - 1, () => {
+    clearScreenAnimation(0, start);
+  });
+};
+
+const clearScreenAnimation = (y, callback, timer) => {
+  timer && clearTimeout(timer);
+
+  let coordinates = DB.clearRow(y);
+  if (coordinates && coordinates.length > 0) {
+    SCREEN.inactivate(coordinates);
+  } else {
+    callback && callback();
+    return;
+  }
+
+  y++;
+  timer = setTimeout(() => {
+    return clearScreenAnimation(y, callback, timer);
+  }, 70);
+};
+
+const fillScreenAnimation = (y, callback, timer) => {
+  timer && clearTimeout(timer);
+
+  let coordinates = DB.fillRow(y);
+  if (coordinates && coordinates.length > 0) {
+    SCREEN.activate(coordinates);
+  } else {
+    callback && callback();
+    return;
+  }
+
+  y--;
+  timer = setTimeout(() => {
+    return fillScreenAnimation(y, callback, timer);
+  }, 70);
 };
 
 const onMoveLeft = () => {

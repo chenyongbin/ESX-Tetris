@@ -1,4 +1,4 @@
-const extend = function(dest, source) {
+const extend = (dest, source) => {
   for (let p in source) {
     if (p in dest) {
       dest[p] = source[p];

@@ -184,14 +184,30 @@ const reset = (yCoordinates, callback) => {
 };
 
 /**
- * 清空所有状态
+ * 逐行填满
  */
-const clear = function() {
-  COORDINATES.forEach(xArr => {
-    for (let x = 0; x < xArr.length; x++) {
-      xArr[0] = 0;
-    }
-  });
+const fillRow = y => {
+  if (y < 0 || y >= sizeY) return [];
+  let coordinates = [];
+  for (let x = 0; x < sizeX; x++) {
+    COORDINATES[y][x] = 1;
+    coordinates.push({ x: x, y: y });
+  }
+  return coordinates;
+};
+
+/**
+ * 逐行清空
+ */
+const clearRow = y => {
+  if (y < 0 || y >= sizeY) return [];
+
+  let coordinates = [];
+  for (let x = 0; x < sizeX; x++) {
+    COORDINATES[y][x] = 0;
+    coordinates.push({ x: x, y: y });
+  }
+  return coordinates;
 };
 
 export default {
@@ -203,5 +219,6 @@ export default {
   checkWhetherHasReachedBottom,
   getFilledYCoordinates,
   reset,
-  clear
+  fillRow,
+  clearRow
 };

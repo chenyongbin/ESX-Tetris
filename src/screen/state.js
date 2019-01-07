@@ -9,11 +9,11 @@ let bgCanvas = null,
   eliminatedRowsDigitSequence = null;
 
 const BLOCKS_MAP = {},
-  getBlockKey = function(x, y) {
+  getBlockKey = (x, y) => {
     return `KEY_${x}_${y}`;
   };
 
-const initialize = function(containerDOM, offsetX, offsetY, width, height) {
+const initialize = (containerDOM, offsetX, offsetY, width, height) => {
   bgCanvas = new Canvas(
     containerDOM,
     offsetX,
@@ -43,8 +43,8 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
     scoreOffsetY = STATE_CONFIG.top,
     eliminatedRowsOffsetX = STATE_CONFIG.left,
     eliminatedRowsOffsetY = STATE_CONFIG.top + scoreHeight,
-    nextBlockOffsetX = STATE_CONFIG.left,
-    nextBlockOffsetY = STATE_CONFIG.top + scoreHeight + eliminatedRowsHeight;
+    nextShapeOffsetX = STATE_CONFIG.left,
+    nextShapeOffsetY = STATE_CONFIG.top + scoreHeight + eliminatedRowsHeight;
 
   let digitSequenceOffset = 5;
   canvas.context.font = STATE_CONFIG.font;
@@ -66,9 +66,9 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
     width - digitSequenceOffset
   );
 
-  canvas.fillText("下一个", nextBlockOffsetX, nextBlockOffsetY);
-  let matrixOffsetX = nextBlockOffsetX,
-    matrixOffsetY = nextBlockOffsetY + STATE_CONFIG.fontSize;
+  canvas.fillText("下一个", nextShapeOffsetX, nextShapeOffsetY);
+  let matrixOffsetX = nextShapeOffsetX,
+    matrixOffsetY = nextShapeOffsetY + STATE_CONFIG.fontSize;
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 2; j++) {
       let block = new Block(
@@ -88,17 +88,17 @@ const initialize = function(containerDOM, offsetX, offsetY, width, height) {
   }
 };
 
-const updateScore = function(score) {
+const updateScore = score => {
   score = Number.parseInt(score);
   Number.isInteger(score) && scoreDigitSequence.show(score);
 };
 
-const updateEliminatedRowNum = function(rowNum) {
+const updateEliminatedRowNum = rowNum => {
   rowNum = Number.parseInt(rowNum);
   Number.isInteger(rowNum) && eliminatedRowsDigitSequence.show(rowNum);
 };
 
-const updateNextBlock = function(coordinates) {
+const updateNextShape = coordinates => {
   if (!Array.isArray(coordinates)) return;
   for (let key in BLOCKS_MAP) {
     BLOCKS_MAP[key].inactivate();
@@ -117,5 +117,5 @@ export default {
   initialize,
   updateScore,
   updateEliminatedRowNum,
-  updateNextBlock
+  updateNextShape
 };

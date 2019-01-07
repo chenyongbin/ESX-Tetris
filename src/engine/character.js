@@ -1,14 +1,15 @@
 export default class Character {
-  constructor(offsetX, ...states) {
+  constructor(offsetX, offsetY, ...states) {
     this.states = states;
     this.offsetX = offsetX;
-    this.offsetY = 0;
+    this.offsetY = offsetY;
     this.stateIndex = 0;
     this.prevCoordinates = [];
     this.coordinates = this.states[this.stateIndex].map(({ x, y }) => ({
       x: x + this.offsetX,
       y: y + this.offsetY
     }));
+    this.timestamp = Date.now();
 
     this.getRawCoordinates = this.getRawCoordinates.bind(this);
     this.getCoordinates = this.getCoordinates.bind(this);

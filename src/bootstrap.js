@@ -28,7 +28,7 @@ Engine.initialize({
   unhighlight: Screen.unhighlight,
   updateScore: Screen.updateScore,
   updateEliminatedRowNum: Screen.updateEliminatedRowNum,
-  updateNextCharacter: Screen.updateNextBlock
+  updateNextShape: Screen.updateNextShape
 });
 
 Control.addDropEventHandler(Engine.onMoveDrop);

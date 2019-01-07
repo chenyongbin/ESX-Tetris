@@ -69,11 +69,11 @@ const ReverseLittleHShape = [
 ];
 
 /**
- * 生成一个方块对象
- * @returns {object} 一个模块对象
+ * 生成一个图形
+ * @returns {object} 一个模块图形
  */
-const getCharacter = sizeX => {
-  let characters = [
+const getShape = sizeX => {
+  let shapes = [
     SquareShape,
     LShape,
     ReverseLShape,
@@ -82,11 +82,22 @@ const getCharacter = sizeX => {
     LittleHShape,
     ReverseLittleHShape
   ];
-  let rand = Math.floor(Math.random() * characters.length),
-    offsetX = Math.floor(Math.random() * (sizeX - 4));
-  return new Character(offsetX, ...characters[rand]);
+  let rand = Math.floor(Math.random() * shapes.length),
+    offsetX = 0,
+    offsetY = 0;
+  let shape = shapes[rand];
+  for (let { x, y } of shape[0]) {
+    if (offsetY < y) offsetY = y;
+    if (offsetX < x) offsetX = x;
+  }
+
+  return new Character(
+    Math.floor((sizeX - offsetX) / 2),
+    -1 * offsetY,
+    ...shape
+  );
 };
 
 export default {
-  getCharacter
+  getShape
 };

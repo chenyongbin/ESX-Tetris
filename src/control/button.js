@@ -1,3 +1,8 @@
+/**
+ * 控制板按钮类
+ * @export Button
+ * @class Button
+ */
 export default class Button {
   constructor(
     canvas,
@@ -47,10 +52,18 @@ export default class Button {
       });
     }
 
-    this.isPointInArea = this.isPointInArea.bind(this);
+    this.contains = this.contains.bind(this);
   }
 
-  isPointInArea(x, y) {
+  /**
+   * 是否包含该坐标
+   *
+   * @param {number} x 坐标x
+   * @param {number} y 坐标y
+   * @returns
+   * @memberof Button
+   */
+  contains(x, y) {
     return (
       Math.sqrt(Math.pow(x - this.sx, 2) + Math.pow(y - this.sy, 2)) <=
       this.radius

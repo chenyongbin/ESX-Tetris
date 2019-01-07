@@ -6,6 +6,11 @@ let canvas = null,
   BUTTONS_MAP = {},
   BUTTONS_EVENTHANDLERS_MAP = new Map();
 
+/**
+ * 初始化
+ * @param {Element} containerDOM 容器DOM对象
+ * @param {Object} { offsetX, offsetY, width, height } {偏移X，偏移Y，宽，高}
+ */
 const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   canvas = new Canvas(
     containerDOM,
@@ -91,7 +96,7 @@ const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
       clickX = e.pageX - controlPageX,
       clickY = e.pageY - controlPageY;
     for (let name in BUTTONS_MAP) {
-      if (BUTTONS_MAP[name].isPointInArea(clickX, clickY)) {
+      if (BUTTONS_MAP[name].contains(clickX, clickY)) {
         // console.log(`you clicked button ${name}`);
         eventName = name;
         break;
@@ -129,6 +134,10 @@ const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   };
 };
 
+/**
+ * 获取控件板相对于页面的偏移坐标
+ * @returns
+ */
 const getControlOffsetAgainstPage = () => {
   if (!canvas) return { offsetX: 0, offsetY: 0 };
   let x = 0,
@@ -142,6 +151,11 @@ const getControlOffsetAgainstPage = () => {
   return { controlPageX: x, controlPageY: y };
 };
 
+/**
+ * 添加事件处理程序*
+ * @param {string} eventName 事件名称
+ * @param {function} handler 处理器
+ */
 const addEventHandler = (eventName, handler) => {
   if (handler && typeof handler == "function") {
     let handlers = BUTTONS_EVENTHANDLERS_MAP.get(eventName);
@@ -151,6 +165,11 @@ const addEventHandler = (eventName, handler) => {
   }
 };
 
+/**
+ * 执行事件处理程序
+ * @param {string} eventName 事件名称
+ * @returns
+ */
 const executeEventHandler = eventName => {
   let handlers = BUTTONS_EVENTHANDLERS_MAP.get(eventName);
   if (!handlers || handlers.length == 0) return;
@@ -160,30 +179,58 @@ const executeEventHandler = eventName => {
   }
 };
 
+/**
+ * 添加掉落事件处理程序
+ * @param {function} handler 处理器
+ */
 const addDropEventHandler = handler => {
   addEventHandler("DROP", handler);
 };
 
+/**
+ * 添加左移事件处理程序
+ * @param {function} handler 处理器
+ */
 const addLeftEventHandler = handler => {
   addEventHandler("LEFT", handler);
 };
 
+/**
+ * 添加右移事件处理程序
+ * @param {function} handler 处理器
+ */
 const addRightEventHandler = handler => {
   addEventHandler("RIGHT", handler);
 };
 
+/**
+ * 添加下移事件处理程序
+ * @param {function} handler 处理器
+ */
 const addDownEventHandler = handler => {
   addEventHandler("DOWN", handler);
 };
 
+/**
+ * 添加旋转事件处理程序
+ * @param {function} handler 处理器
+ */
 const addRotateEventHandler = handler => {
   addEventHandler("ROTATE", handler);
 };
 
+/**
+ * 添加重启事件处理程序
+ * @param {function} handler 处理器
+ */
 const addRestartEventHandler = handler => {
   addEventHandler("RESTART", handler);
 };
 
+/**
+ * 添加暂停事件处理程序
+ * @param {function} handler 处理器
+ */
 const addPauseEventHandler = handler => {
   addEventHandler("PAUSE", handler);
 };

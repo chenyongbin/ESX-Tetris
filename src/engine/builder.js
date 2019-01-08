@@ -5,7 +5,7 @@
  * @version 0.0.1
  */
 
-import Character from "./character";
+import Shape from "./shape";
 
 /**
  * 田字型方块
@@ -91,7 +91,7 @@ const getShape = sizeX => {
     if (offsetX < x) offsetX = x;
   }
 
-  return new Character(
+  return new Shape(
     Math.floor((sizeX - offsetX) / 2),
     -1 * offsetY,
     ...shape

@@ -1,4 +1,4 @@
-export default class Character {
+export default class Shape {
   constructor(offsetX, offsetY, ...states) {
     this.states = states;
     this.offsetX = offsetX;

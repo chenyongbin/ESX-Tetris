@@ -1,3 +1,8 @@
+/**
+ * @file 屏幕模块
+ * @version 1.0.0
+ */
+
 import { screen as SCREEN_CONFIG, matrix as MATRIX_CONFIG } from "../config";
 import Matrix from "./matrix";
 import State from "./state";
@@ -8,6 +13,11 @@ let paddingX = 0,
   verticalBlockNumber = 0,
   matrixWidthProportion = 0.7;
 
+/**
+ * 初始化
+ * @param {element} containerDOM 容器DOM对象
+ * @param {object} { offsetX, offsetY, width, height }
+ */
 const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   if (MATRIX_CONFIG.blockSize * 13 + 4 * MATRIX_CONFIG.borderWidth > width)
     throw new Error("屏幕所占宽度太小");
@@ -63,6 +73,10 @@ const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
   );
 };
 
+/**
+ * 获取屏幕矩阵尺寸
+ * @returns
+ */
 const getSize = () => {
   return {
     matrixSizeX: horizontalBlockNumber,

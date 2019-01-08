@@ -1,8 +1,6 @@
 /**
  * @file 数据库模块
- * @module dataBase
- * @author chenyongbin <chenyongbin789@163.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 
 let sizeX = 0,

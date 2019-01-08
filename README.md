@@ -18,7 +18,7 @@
          |--- index.js 控制板主流程
     |--- engine
          |--- animation.js 动画
-         |--- builder.js 方块生成器
+         |--- builder.js 方块形状生成器
          |--- db.js 数据库
          |--- shape.js 方块形状类
          |--- timer.js 定时器

@@ -1,3 +1,8 @@
+/**
+ * @file 屏幕状态模块
+ * @version 1.0.0
+ */
+
 import { state as STATE_CONFIG, matrix as MATRIX_CONFIG } from "../config";
 import Canvas from "../canvas";
 import Block from "./block";

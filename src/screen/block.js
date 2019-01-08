@@ -1,3 +1,8 @@
+/**
+ * 方块类
+ * @export Block
+ * @class Block
+ */
 export default class Block {
   constructor(canvas, x, y, size) {
     this.canvas = canvas;

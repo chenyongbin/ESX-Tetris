@@ -1,8 +1,6 @@
 /**
  * @file 启动模块
- * @module bootstrap
- * @author chenyongbin <chenyongbin789@163.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 
 let containerDOM = document.getElementById("container");

@@ -1,8 +1,6 @@
 /**
  * @file 定时器模块
- * @module timer
- * @author chenyongbin <chenyongbin789@163.com>
- * @version 0.0.1
+ * @version 1.0.0
  */
 
 let options = {

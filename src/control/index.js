@@ -1,3 +1,8 @@
+/**
+ * @file 控制板模块
+ * @version 1.0.0
+ */
+
 import { control as CONTROL_CONFIG } from '../config';
 import Canvas from '../canvas';
 import Button from './button';

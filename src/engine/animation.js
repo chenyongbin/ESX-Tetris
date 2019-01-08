@@ -1,3 +1,8 @@
+/**
+ * @file 动画模块
+ * @version 1.0.0
+ */
+
 import { extend } from '../util';
 import DB from './db';
 

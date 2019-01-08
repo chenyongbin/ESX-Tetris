@@ -1,3 +1,8 @@
+/**
+ * 方块形状类
+ * @export Shape
+ * @class Shape
+ */
 export default class Shape {
   constructor(offsetX, offsetY, ...states) {
     this.states = states;

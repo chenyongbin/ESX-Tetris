@@ -1,5 +1,10 @@
 import Digit from "./digit";
 
+/**
+ * 数字序列类
+ * @export DigitSequence
+ * @class DigitSequence
+ */
 export default class DigitSequence {
   constructor(bgCanvas, canvas, x, y, width) {
     this.x = x;

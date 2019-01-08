@@ -84,6 +84,11 @@ const showDigit = function(canvas, d, fillStyle) {
   }
 };
 
+/**
+ * 数字类
+ * @export Digit
+ * @class Digit
+ */
 export default class Digit {
   constructor(x, y, size, bgCanvs, canvas) {
     if (!bgCanvs || !canvas)

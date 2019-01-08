@@ -1,3 +1,8 @@
+/**
+ * @file 引擎模块
+ * @version 1.0.0
+ */
+
 import { extend, getScore } from '../util';
 import DB from './db';
 import TIMER from './timer';

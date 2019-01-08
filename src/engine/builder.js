@@ -1,8 +1,6 @@
 /**
- * @file 方块生成器模块
- * @module builder
- * @author chenyongbin <chenyongbin789@163.com>
- * @version 0.0.1
+ * @file 形状生成器模块
+ * @version 1.0.0
  */
 
 import Shape from "./shape";

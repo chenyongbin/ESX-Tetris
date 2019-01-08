@@ -1,3 +1,8 @@
+/**
+ * @file 屏幕矩阵模块
+ * @version 1.0.0
+ */
+
 import { matrix as MATRIX_CONFIG } from "../config";
 import Canvas from "../canvas";
 import Block from "./block";

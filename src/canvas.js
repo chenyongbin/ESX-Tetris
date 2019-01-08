@@ -1,5 +1,10 @@
 import { extend } from "./util";
 
+/**
+ * 画布类
+ * @export Canvas
+ * @class Canvas
+ */
 export default class Canvas {
   constructor(
     containerDOM,

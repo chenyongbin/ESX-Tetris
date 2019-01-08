@@ -95,12 +95,14 @@ const initialize = (containerDOM, offsetX, offsetY, width, height) => {
 
 const updateScore = score => {
   score = Number.parseInt(score);
-  Number.isInteger(score) && scoreDigitSequence.show(score);
+  score > 0 ? scoreDigitSequence.show(score) : scoreDigitSequence.reset();
 };
 
 const updateEliminatedRowNum = rowNum => {
   rowNum = Number.parseInt(rowNum);
-  Number.isInteger(rowNum) && eliminatedRowsDigitSequence.show(rowNum);
+  rowNum > 0
+    ? eliminatedRowsDigitSequence.show(rowNum)
+    : eliminatedRowsDigitSequence.reset();
 };
 
 const updateNextShape = coordinates => {
@@ -108,6 +110,7 @@ const updateNextShape = coordinates => {
   for (let key in BLOCKS_MAP) {
     BLOCKS_MAP[key].inactivate();
   }
+  if (coordinates.length == 0) return;
   coordinates.forEach(coordinate => {
     let block = BLOCKS_MAP[getBlockKey(coordinate.x, coordinate.y)];
     block &&

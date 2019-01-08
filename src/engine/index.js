@@ -28,7 +28,9 @@ let elapsingObject = {
 	totalScore: 0,
 	eliminatedRowNum: 0,
 	isHighlightAnimating: false,
+	isPaused: false,
 	clear() {
+		elapsingObject.isPaused = false;
 		elapsingObject.shape = null;
 		elapsingObject.totalScore = 0;
 		elapsingObject.eliminatedRowNum = 0;
@@ -99,7 +101,11 @@ const onRowsFilled = (yCoordinates) => {
 			);
 			stop();
 
-      // 开启清屏动画，然后再次启动引擎
+			SCREEN.updateScore(0);
+			SCREEN.updateEliminatedRowNum(0);
+			SCREEN.updateNextShape([]);
+
+      		// 开启清屏动画，然后再次启动引擎
 			ANIMATION.fillScreen(() => {
 				ANIMATION.clearScreen(start);
 			});
@@ -145,6 +151,7 @@ const stop = () => {
  * @returns
  */
 const onMoveLeft = () => {
+	elapsingObject.isPaused && onGameRestart();
 	if (elapsingObject.shape && DB.checkWhetherHasReachedLeft(elapsingObject.shape.coordinates)) return;
 	if (elapsingObject.shape) {
 		elapsingObject.shape.left();
@@ -157,6 +164,7 @@ const onMoveLeft = () => {
  * @returns
  */
 const onMoveRight = () => {
+	elapsingObject.isPaused && onGameRestart();
 	if (elapsingObject.shape && DB.checkWhetherHasReachedRight(elapsingObject.shape.coordinates)) return;
 	if (elapsingObject.shape) {
 		elapsingObject.shape.right();
@@ -169,6 +177,7 @@ const onMoveRight = () => {
  * @returns
  */
 const onMoveDown = () => {
+	elapsingObject.isPaused && onGameRestart();
 	if (elapsingObject.shape && DB.checkWhetherHasReachedBottom(elapsingObject.shape.coordinates)) return;
 	if (elapsingObject.shape) {
 		elapsingObject.shape.down();
@@ -181,6 +190,7 @@ const onMoveDown = () => {
  * @returns
  */
 const onMoveDrop = () => {
+	elapsingObject.isPaused && onGameRestart();
 	while (elapsingObject.shape) {
 		elapsingObject.shape.down();
 		onShapeMoved();
@@ -192,6 +202,7 @@ const onMoveDrop = () => {
  * @returns
  */
 const onMoveRotate = () => {
+	elapsingObject.isPaused && onGameRestart();
 	if (elapsingObject.shape && DB.checkWhetherHasReachedBottom(elapsingObject.shape.coordinates)) return;
 	if (elapsingObject.shape) {
 		elapsingObject.shape.rotate();
@@ -204,6 +215,7 @@ const onMoveRotate = () => {
  * @returns
  */
 const onGamePause = () => {
+	elapsingObject.isPaused = true;
 	TIMER.pause();
 };
 
@@ -212,6 +224,7 @@ const onGamePause = () => {
  * @returns
  */
 const onGameRestart = () => {
+	elapsingObject.isPaused = false;
 	TIMER.resume();
 };
 

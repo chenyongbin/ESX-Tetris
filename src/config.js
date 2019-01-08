@@ -1,8 +1,5 @@
-let containerElement = document.getElementById('container'),
-	blockSize = containerElement.clientWidth >= 400 ? 24 : 17;
-
 export const panel = {
-	screenMargin: 15,
+	screenMargin: 25,
 	screenBackgroundColor: '#9aae82',
 	screenHeightProportion: 0.7,
 	controlMargin: 15,
@@ -14,8 +11,8 @@ export const screen = {
 };
 
 export const matrix = {
-	borderWidth: 2,
-	blockSize: blockSize,
+	borderWidth: 3,
+	blockSize: 18,
 	bgBlockBorderColor: '#84946e',
 	bgBlockBackgroundColor: '#84946e',
 	blockBorderColor: '#010101',

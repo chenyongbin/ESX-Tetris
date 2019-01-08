@@ -19,13 +19,8 @@ let paddingX = 0,
  * @param {object} { offsetX, offsetY, width, height }
  */
 const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
-  if (MATRIX_CONFIG.blockSize * 13 + 4 * MATRIX_CONFIG.borderWidth > width)
-    throw new Error("屏幕所占宽度太小");
-  if (MATRIX_CONFIG.blockSize * 15 + 4 * MATRIX_CONFIG.borderWidth > height)
-    throw new Error("屏幕所占高度太小");
-
-  width -= 4 * MATRIX_CONFIG.borderWidth;
-  height -= 4 * MATRIX_CONFIG.borderWidth;
+  width = width - 4 * MATRIX_CONFIG.borderWidth - 2 * SCREEN_CONFIG.padding;
+  height = height - 4 * MATRIX_CONFIG.borderWidth - 2 * SCREEN_CONFIG.padding;
   horizontalBlockNumber = Math.floor(width / MATRIX_CONFIG.blockSize);
   verticalBlockNumber = Math.floor(height / MATRIX_CONFIG.blockSize);
   if (width % MATRIX_CONFIG.blockSize == 0) {
@@ -41,8 +36,8 @@ const initialize = (containerDOM, { offsetX, offsetY, width, height }) => {
     paddingY = (height - verticalBlockNumber * MATRIX_CONFIG.blockSize) / 2;
   }
 
-  offsetX += paddingX;
-  offsetY += paddingY;
+  offsetX = offsetX + paddingX + SCREEN_CONFIG.padding;
+  offsetY = offsetY + paddingY + SCREEN_CONFIG.padding;
   horizontalBlockNumber = Math.floor(
     horizontalBlockNumber * matrixWidthProportion
   );

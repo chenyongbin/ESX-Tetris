@@ -9,9 +9,9 @@ export default class Block {
     this.x = x;
     this.y = y;
     this.size = size;
-    this.borderWidth = 0.6;
+    this.borderWidth = 1;
     this.padding = 2;
-    this.margin = 1.7;
+    this.margin = 2;
 
     this.outline = {
       x: this.x + this.margin,

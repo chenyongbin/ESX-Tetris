@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>ESX-Tetris</title>
-    <style type="text/css">
-      html {
-        font-size: 10px;
-      }
 
-      body {
-        background-color: black;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>ESX-Tetris</title>
+  <style type="text/css">
+    html {
+      font-size: 10px;
+    }
 
+    body {
+      background-color: black;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    #container {
+      position: relative;
+      width: 28rem;
+      height: 46rem;
+      margin: 3rem auto;
+      touch-action: manipulation;
+    }
+
+    /* Large devices (laptops/desktops, 992px and up) */
+    @media only screen and (min-width: 992px) {
       #container {
         position: relative;
-        width: 28rem;
-        height: 46rem;
-        margin: 3rem auto;
+        width: 38rem;
+        height: 55rem;
+        margin: 5rem auto;
+        touch-action: manipulation;
       }
+    }
+  </style>
+</head>
 
-      /* Large devices (laptops/desktops, 992px and up) */
-      @media only screen and (min-width: 992px) {
-        #container {
-          position: relative;
-          width: 38rem;
-          height: 55rem;
-          margin: 5rem auto;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="container"></div>
-  </body>
+<body>
+  <div id="container"></div>
+</body>
+
 </html>
